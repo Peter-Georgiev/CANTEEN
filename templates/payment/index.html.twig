@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payment{% endblock %}
+
+{% block body %}
+
+    <div class="container body-content span=8 offset=2">
+        <div class="table-responsive">
+            <table id="dataTable"  class="display" cellspacing="0" width="100%">
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block jsCustomPage %}
+    <script type="module" src="{{ asset('/js/custom-page/page-payment-ajax.js') }}"></script>
+{% endblock %}

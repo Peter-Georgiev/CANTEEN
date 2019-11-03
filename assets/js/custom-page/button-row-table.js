@@ -1,4 +1,3 @@
-
 function rowTextDangerOnOff(isOn = true) {
     let token = (window.location.pathname)
         .trim()

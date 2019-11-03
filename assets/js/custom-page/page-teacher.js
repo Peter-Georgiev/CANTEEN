@@ -1,6 +1,6 @@
 import {table} from './applyDataTable.js'
 import {editButton, deleteButton, addOnButton, rowTextDangerOnOff} from './button-row-table.js';
-import {bg} from "../data-tables/languageDataTable.js";
+import {bg} from "./languageDataTable.js";
 const path = '/teacher';
 
 $(document).ready(function () {

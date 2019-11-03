@@ -42,5 +42,5 @@
 {% endblock %}
 
 {% block jsCustomPage %}
-    <script type="module" src="{{ asset('/js/custom-page/page-teacher.js') }}"></script>
+    {{ encore_entry_script_tags('pageTeacher') }}
 {% endblock %}

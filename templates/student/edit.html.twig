@@ -110,7 +110,6 @@
         </div>
     </div>
 {% endblock %}
-
 {% block jsCustomPage %}
-    <script type="module" src="{{ asset('/js/custom-page/page-student.js') }}"></script>
+    {{ encore_entry_script_tags('pageStudent') }}
 {% endblock %}

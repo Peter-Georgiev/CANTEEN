@@ -69,5 +69,5 @@
 {% endblock %}
 
 {% block jsCustomPage %}
-    <script  type="module" src="{{ asset('/js/custom-page/page-class_table.js') }}"></script>
+    {{ encore_entry_script_tags('pageClassTable') }}
 {% endblock %}

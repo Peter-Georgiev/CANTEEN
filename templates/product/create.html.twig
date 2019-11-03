@@ -77,5 +77,5 @@
 {% endblock %}
 
 {% block jsCustomPage %}
-    <script type="module" src="{{ asset('js/custom-page/page-product-ajax.js') }}"></script>
+    {{ encore_entry_script_tags('pageProductAjax') }}
 {% endblock %}

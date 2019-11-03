@@ -19,7 +19,6 @@ function rowTextDangerOnOff(isOn = true) {
         }
     });
 }
-
 function deleteButton(pathname, rowTable, messages) {
     let promise = new Promise(function(resolve, reject) {
         rowTextDangerOnOff(false);

@@ -33,6 +33,9 @@ Encore
     .addEntry('pageProductAjax', './assets/js/custom-page/page-product-ajax.js')
     .addEntry('pageStudent', './assets/js/custom-page/page-student.js')
     .addEntry('pageTeacher', './assets/js/custom-page/page-teacher.js')
+    //.addEntry('applyDataTable', './assets/js/custom-page/applyDataTable.js')
+    //.addEntry('buttonRowTable', './assets/js/custom-page/button-row-table.js')
+    //.addEntry('languageDataTable', './assets/js/custom-page/languageDataTable.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

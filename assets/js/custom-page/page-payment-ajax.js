@@ -116,11 +116,7 @@ $(document).ready(function () {
                     {extend: 'print'},
                 ],
                 drawCallback: function(){
-                    $('.paginate_button.next:not(.disabled)', this.api().table().container())
-                        .on('click', function(){
-                            rowTextDangerOnOff();
-                        });
-                    $('.paginate_button.previous:not(.disabled)', this.api().table().container())
+                    $('.dataTables_paginate a.paginate_button:not(.disabled)', this.api().table().container())
                         .on('click', function(){
                             rowTextDangerOnOff();
                         });

@@ -1,13 +1,13 @@
 {
-  "build/0.eba20403.js": "/build/0.eba20403.js",
-  "build/1.b436d5b4.js": "/build/1.b436d5b4.js",
-  "build/2.abc233ac.js": "/build/2.abc233ac.js",
-  "build/app.css": "/build/app.d8c104fe.css",
-  "build/app.js": "/build/app.2b6caf68.js",
-  "build/pageClassTable.js": "/build/pageClassTable.449a6739.js",
-  "build/pagePaymentAjax.js": "/build/pagePaymentAjax.efe221a4.js",
-  "build/pageProductAjax.js": "/build/pageProductAjax.7b6f7204.js",
-  "build/pageStudent.js": "/build/pageStudent.6411e29d.js",
-  "build/pageTeacher.js": "/build/pageTeacher.44d1c7db.js",
-  "build/runtime.js": "/build/runtime.dca8fcdd.js"
+  "build/app.css": "/build/app.css",
+  "build/app.js": "/build/app.js",
+  "build/pageClassTable.js": "/build/pageClassTable.js",
+  "build/pagePaymentAjax.js": "/build/pagePaymentAjax.js",
+  "build/pageProductAjax.js": "/build/pageProductAjax.js",
+  "build/pageStudent.js": "/build/pageStudent.js",
+  "build/pageTeacher.js": "/build/pageTeacher.js",
+  "build/runtime.js": "/build/runtime.js",
+  "build/vendors~app.js": "/build/vendors~app.js",
+  "build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+  "build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js"
 }

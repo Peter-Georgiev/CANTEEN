@@ -1,8 +1,8 @@
 import {table} from './applyDataTable.js'
 import {editButton, deleteButton, addOnButton, paidOnButton, rowTextDangerOnOff} from './button-row-table.js';
 import {bg} from './languageDataTable.js';
-const path = '/product';
 const currentPathname = window.location.pathname;
+const path = '/product';
 
 $(document).ready(function () {
     $.ajax({
@@ -134,46 +134,51 @@ $(document).ready(function () {
                         .on('click', function(){
                             rowTextDangerOnOff();
                         });
+                },
+                fnDrawCallback: function( oSettings ) {
+                    $('#loadingBox').hide();
+                    $('.table-responsive').show();
+                    rowTextDangerOnOff();
+                    productCreate(data);
+                    productEditId(data);
+
+                    table.on('click', 'button', function () {
+                        let rowTable = $(this).parent().parent();
+                        rowTable.addClass("text-danger");
+                        let rowText = rowTable.children().map(function(){
+                            return $.trim($(this).text());
+                        }).get();
+
+                        let id = rowTable.attr('id');
+
+                        if (this.id === 'deleteBtn') {
+                            let studentFullName = rowText[0];
+                            let className = rowText[1];
+                            let forMonth = rowText[5];
+                            let price = rowText[3];
+                            let message = `Изтривате плащане на \"${studentFullName}\" от \"${className}\"\n` +
+                                `за месец \"${forMonth}\", сума ${price} лв.!!!`;
+
+                            deleteButton(`${path}/delete/${id}`, rowTable, message);
+                        } else if (this.id === 'editBtn') {
+                            editButton(`${path}/edit/${id}`);
+                        } else if (this.id === 'paidBtn') {
+                            paidOnButton(`/payment/product/${id}`);
+                        }
+                    });
+
+                    $('#addOnBtn button').on('click', function () {
+                        addOnButton(`${path}/create`);
+                    });
                 }
             });
-
-            rowTextDangerOnOff();
-            productCreate(data);
-            productEditId(data);
-
-            },
-            error : function(xhr, textStatus, errorThrown) {
-                alert('Грешка в данните от сървъра.');
-            },
-    });
-
-    $('#addOnBtn button').on('click', function () {
-        addOnButton(`${path}/create`);
-    });
-
-    table.on('click', 'button', function () {
-        let rowTable = $(this).parent().parent();
-        rowTable.addClass("text-danger");
-        let rowText = rowTable.children().map(function(){
-            return $.trim($(this).text());
-        }).get();
-
-        let id = rowTable.attr('id');
-
-        if (this.id === 'deleteBtn') {
-            let studentFullName = rowText[0];
-            let className = rowText[1];
-            let forMonth = rowText[5];
-            let price = rowText[3];
-            let message = `Изтривате плащане на \"${studentFullName}\" от \"${className}\"\n` +
-                `за месец \"${forMonth}\", сума ${price} лв.!!!`;
-
-            deleteButton(`${path}/delete/${id}`, rowTable, message);
-        } else if (this.id === 'editBtn') {
-            editButton(`${path}/edit/${id}`);
-        } else if (this.id === 'paidBtn') {
-            paidOnButton(`/payment/product/${id}`);
-        }
+        },
+        error : function(xhr, textStatus, errorThrown) {
+            $('#loadingBox').hide();
+            $('.table-responsive').hide();
+            $('#errorBox span').text('Грешка в данните от сървъра!');
+            $('#errorBox').show();
+        },
     });
 
     function productCreate(data) {

@@ -116,23 +116,31 @@
     {% endblock %}
 
     <body>
-
         <div class="container body-container">
+
             {% block body %}
                 <div class="row">
                     <div id="main" class="col-sm-9">
 
-                        <div class="container body-content">
-                            {% if danger is defined %}
-                                <h4 class="text-danger text-center" id="danger_text">{{ danger }}</h4>
-                            {% endif %}
-
-                            {% if info is defined %}
-                                <h4 class="text-info text-center" id="text_info">{{ info }}</h4>
+                        <div class="container body-content span=8 offset=2">
+                            {% if (danger is defined) or (info is defined) %}
+                                <div id="notifications" class="well" >
+                                    <div id="dangerBox" class="notification">
+                                        {% if danger is defined %}
+                                            <span id="danger_text">{{ danger }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div id="infoBox" class="notification">
+                                        {% if info is defined %}
+                                            <span id="text_info">{{ info }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             {% endif %}
                         </div>
 
                         {% block main %}{% endblock %}
+
                     </div>
                 </div>
             {% endblock %}

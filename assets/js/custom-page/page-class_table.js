@@ -37,37 +37,40 @@ $(document).ready(function () {
                 .on('click', function(){
                     rowTextDangerOnOff();
                 });
+        },
+        fnDrawCallback: function( oSettings ) {
+            $('#loadingBox').hide();
+            $(".table-responsive").show();
+            rowTextDangerOnOff();
+
+            table.on('click', 'button', function () {
+                let rowTable = $(this).parent().parent();
+                rowTable.addClass("text-danger");
+                let rowText = rowTable.children().map(function(){
+                    return $.trim($(this).text());
+                }).get();
+
+                let id = rowTable.attr('id');
+                let className = rowText[0];
+                let studentCount = rowText[1];
+
+                let message = `Изтриване на КЛАС \"${className}\", обвързан с`;
+                if (studentCount > 1) {
+                    message += ` ${studentCount} студента!!!`;
+                } else {
+                    message += ` ${studentCount} студент!!!`;
+                }
+
+                if (this.id === 'deleteBtn') {
+                    deleteButton(`${path}/delete/${id}`, rowTable, message);
+                } else if (this.id === 'editBtn') {
+                    editButton(`${path}/edit/${id}`);
+                }
+            });
+
+            $('#addOnBtn button').on('click', function () {
+                addOnButton(`${path}/create`);
+            });
         }
-    });
-
-    rowTextDangerOnOff();
-
-    table.on('click', 'button', function () {
-        let rowTable = $(this).parent().parent();
-        rowTable.addClass("text-danger");
-        let rowText = rowTable.children().map(function(){
-            return $.trim($(this).text());
-        }).get();
-
-        let id = rowTable.attr('id');
-        let className = rowText[0];
-        let studentCount = rowText[1];
-
-        let message = `Изтриване на КЛАС \"${className}\", обвързан с`;
-        if (studentCount > 1) {
-            message += ` ${studentCount} студента!!!`;
-        } else {
-            message += ` ${studentCount} студент!!!`;
-        }
-
-        if (this.id === 'deleteBtn') {
-            deleteButton(`${path}/delete/${id}`, rowTable, message);
-        } else if (this.id === 'editBtn') {
-            editButton(`${path}/edit/${id}`);
-        }
-    });
-
-    $('#addOnBtn button').on('click', function () {
-        addOnButton(`${path}/create`);
     });
 });

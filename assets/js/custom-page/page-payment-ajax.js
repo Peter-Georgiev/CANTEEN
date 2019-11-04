@@ -120,43 +120,45 @@ $(document).ready(function () {
                         .on('click', function(){
                             rowTextDangerOnOff();
                         });
+                },
+                fnDrawCallback: function( oSettings ) {
+                    $('#loadingBox').hide();
+                    $(".table-responsive").show();
+                    rowTextDangerOnOff();
+
+                    table.on('click', 'tr', function () {
+                        window.location.href = `${path}/pdf/${this.getAttribute('id')}`;
+                    });
+
+                    table.on('click', 'button', function () {
+                        let rowTable = $(this).parent().parent();
+                        rowTable.addClass("text-danger");
+                        let rowText = rowTable.children().map(function(){
+                            return $.trim($(this).text());
+                        }).get();
+
+                        let id = rowTable.attr('id');
+
+                        if (this.id === 'deleteBtn') {
+                            let studentFullName = rowText[0];
+                            let className = rowText[1];
+                            let price = rowText[5];
+                            let status = rowText[3];
+                            let forMonth = rowText[4];
+                            let paymentDay = rowText[6];
+                            let message = `Изтривате плащане на \"${studentFullName}\" от \"${className}\" клас\n` +
+                                `за месец \"${forMonth}\", сума ${price} лв., платено на дата ${paymentDay}.!!!`;
+
+                            deleteButton(`${path}/delete/${id}`, rowTable, message);
+                        } else if (this.id === 'editBtn') {
+                            editButton(`${path}/edit/${id}`);
+                        }
+                    });
                 }
             });
-
-            rowTextDangerOnOff();
-
         },
         error : function(xhr, textStatus, errorThrown) {
             alert('Грешка в данните от сървъра.');
         },
-    });
-
-    table.on('click', 'tr', function () {
-        window.location.href = `${path}/pdf/${this.getAttribute('id')}`;
-    });
-
-    table.on('click', 'button', function () {
-        let rowTable = $(this).parent().parent();
-        rowTable.addClass("text-danger");
-        let rowText = rowTable.children().map(function(){
-            return $.trim($(this).text());
-        }).get();
-
-        let id = rowTable.attr('id');
-
-        if (this.id === 'deleteBtn') {
-            let studentFullName = rowText[0];
-            let className = rowText[1];
-            let price = rowText[5];
-            let status = rowText[3];
-            let forMonth = rowText[4];
-            let paymentDay = rowText[6];
-            let message = `Изтривате плащане на \"${studentFullName}\" от \"${className}\" клас\n` +
-                `за месец \"${forMonth}\", сума ${price} лв., платено на дата ${paymentDay}.!!!`;
-
-            deleteButton(`${path}/delete/${id}`, rowTable, message);
-        } else if (this.id === 'editBtn') {
-            editButton(`${path}/edit/${id}`);
-        }
     });
 });

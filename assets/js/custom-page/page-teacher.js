@@ -37,37 +37,40 @@ $(document).ready(function () {
                 .on('click', function(){
                     rowTextDangerOnOff();
                 });
-        }
-    });
+        },
+       fnDrawCallback: function( oSettings ) {
+           $('#loadingBox').hide();
+           $(".table-responsive").show();
+           rowTextDangerOnOff();
 
-   rowTextDangerOnOff();
+           table.on('click', 'button', function () {
+               let rowTable = $(this).parent().parent();
+               rowTable.addClass("text-danger");
+               let rowText = rowTable.children().map(function(){
+                   return $.trim($(this).text());
+               }).get();
 
-    table.on('click', 'button', function () {
-        let rowTable = $(this).parent().parent();
-        rowTable.addClass("text-danger");
-        let rowText = rowTable.children().map(function(){
-            return $.trim($(this).text());
-        }).get();
+               let id = rowTable.attr('id');
+               let teacherFullName = rowText[0];
+               let teacherCount = rowText[1];
 
-        let id = rowTable.attr('id');
-        let teacherFullName = rowText[0];
-        let teacherCount = rowText[1];
+               let message = `Изтриване на калсен ръководител \"${teacherFullName}\", обвързан с `;
+               if (teacherCount > 1) {
+                   message += `${teacherCount} студента!!!`;
+               } else {
+                   message += `${teacherCount} студент!!!`;
+               }
 
-        let message = `Изтриване на калсен ръководител \"${teacherFullName}\", обвързан с `;
-        if (teacherCount > 1) {
-            message += `${teacherCount} студента!!!`;
-        } else {
-            message += `${teacherCount} студент!!!`;
-        }
+               if (this.id === 'deleteBtn') {
+                   deleteButton(`${path}/delete/${id}`, rowTable, message);
+               } else if (this.id === 'editBtn') {
+                   editButton(`${path}/edit/${id}`);
+               }
+           });
 
-        if (this.id === 'deleteBtn') {
-            deleteButton(`${path}/delete/${id}`, rowTable, message);
-        } else if (this.id === 'editBtn') {
-            editButton(`${path}/edit/${id}`);
-        }
-    });
-
-    $('#addOnBtn button').on('click', function () {
-        addOnButton(`${path}/create`);
+           $('#addOnBtn button').on('click', function () {
+               addOnButton(`${path}/create`);
+           });
+       }
     });
 });

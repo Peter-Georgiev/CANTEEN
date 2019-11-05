@@ -19,43 +19,35 @@ $(document).ready(function () {
                         data: "student", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Име на ученик'
-                    },
-                    {
+                    }, {
                         data: "class", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Клас'
-                    },
-                    {
+                    }, {
                         data: "teacher", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Курсов ръководител'
-                    },
-                    {
+                    }, {
                         data: "payment", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Заявена сума'
-                    },
-                    {
+                    }, {
                         data: "forMonth", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Такса за месец'
-                    },
-                    {
+                    }, {
                         data: "price", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Платено'
-                    },
-                    {
+                    }, {
                         data: "datePurchases", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Платено на дата'
-                    },
-                    {
+                    }, {
                         data: "user", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Име на касиер'
-                    },
-                    {
+                    }, {
                         data: function (row, type, val, meta) {
                             let lastEdit = row.lastEdit;
                             let datePurchases = row.datePurchases;
@@ -67,16 +59,13 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Редакция'
-                    },
-                    {
+                    }, {
                         data: 'namePayer', // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Име на платеца'
-                    },
-                    {
+                    }, {
                         title: 'Плащане'
-                    },
-                    {
+                    }, {
                         title: 'Редактиране'
                     },
                 ],
@@ -158,7 +147,10 @@ $(document).ready(function () {
             });
         },
         error : function(xhr, textStatus, errorThrown) {
-            alert('Грешка в данните от сървъра.');
+            $('#loadingBox').hide();
+            $('.table-responsive').hide();
+            $('#errorBox span').text('Грешка в данните от сървъра!');
+            $('#errorBox').show();
         },
     });
 });

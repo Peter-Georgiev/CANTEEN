@@ -3,7 +3,7 @@
     "app": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/vendors~app.js",
         "/build/app.js"
       ],
@@ -14,40 +14,48 @@
     "pageClassTable": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-        "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/pageClassTable.js"
       ]
     },
     "pagePaymentAjax": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-        "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/pagePaymentAjax.js"
       ]
     },
     "pageProductAjax": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-        "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/pageProductAjax.js"
+      ]
+    },
+    "pagePricePerDayAjax": {
+      "js": [
+        "/build/runtime.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/pagePricePerDayAjax.js"
       ]
     },
     "pageStudent": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-        "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/pageStudent.js"
       ]
     },
     "pageTeacher": {
       "js": [
         "/build/runtime.js",
-        "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-        "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+        "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
         "/build/pageTeacher.js"
       ]
     }

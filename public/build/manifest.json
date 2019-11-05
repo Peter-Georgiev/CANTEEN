@@ -3,11 +3,12 @@
   "build/app.js": "/build/app.js",
   "build/pageClassTable.js": "/build/pageClassTable.js",
   "build/pagePaymentAjax.js": "/build/pagePaymentAjax.js",
+  "build/pagePricePerDayAjax.js": "/build/pagePricePerDayAjax.js",
   "build/pageProductAjax.js": "/build/pageProductAjax.js",
   "build/pageStudent.js": "/build/pageStudent.js",
   "build/pageTeacher.js": "/build/pageTeacher.js",
   "build/runtime.js": "/build/runtime.js",
   "build/vendors~app.js": "/build/vendors~app.js",
-  "build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~app~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js",
-  "build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~pageClassTable~pagePaymentAjax~pageProductAjax~pageStudent~pageTeacher.js"
+  "build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~app~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js",
+  "build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js": "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent~pageTeacher.js"
 }

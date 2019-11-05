@@ -7,7 +7,6 @@ use App\Entity\Student;
 use App\Entity\Teacher;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
-use Doctrine\DBAL\Driver\AbstractDB2Driver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +18,7 @@ class StudentController extends AbstractController
 {
     /**
      * @Route("/student", name="student")
-     ** @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function index()
     {
@@ -80,7 +79,7 @@ class StudentController extends AbstractController
 
     /**
      * @Route("/student/edit/{id}", name="student_edit")
-     ** @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function editAction($id, Request $request)
     {

@@ -20,7 +20,7 @@ class PaymentController extends AbstractController
 {
     /**
      * @Route("/payment", name="payment")
-     * @@Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @throws \Exception
      */
     public function index(Request $request)

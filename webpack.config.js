@@ -31,6 +31,7 @@ Encore
     .addEntry('pageClassTable', './assets/js/custom-page/page-class_table.js')
     .addEntry('pagePaymentAjax', './assets/js/custom-page/page-payment-ajax.js')
     .addEntry('pageProductAjax', './assets/js/custom-page/page-product-ajax.js')
+    .addEntry('pagePricePerDayAjax', './assets/js/custom-page/page-pricePerDay-ajax.js')
     .addEntry('pageStudent', './assets/js/custom-page/page-student.js')
     .addEntry('pageTeacher', './assets/js/custom-page/page-teacher.js')
     //.addEntry('applyDataTable', './assets/js/custom-page/applyDataTable.js')

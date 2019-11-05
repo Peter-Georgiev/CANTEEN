@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create price per day!{% endblock %}
+
+{% block main %}
+
+    <div class="container body-content span=8 offset=2">
+        <div class="well"  id="addOnBtn">
+            <button type="submit" class="btn btn-info center-block">Добавяне на цена за ден</button>
+        </div>
+        <div id="notifications-table">
+            <div id="loadingBox" class="notification">
+                <span>Зареждане на данните …</span>
+            </div>
+            <div id="errorBox" class="notification">
+                <span>Грешка в данните!</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table id="dataTable"  class="display" cellspacing="0" width="100%">
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jsCustomPage %}
+    {{ encore_entry_script_tags('pagePricePerDayAjax') }}
+{% endblock %}

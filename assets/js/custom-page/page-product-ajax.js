@@ -20,18 +20,15 @@ $(document).ready(function () {
                         data: "student", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Ученик'
-                    },
-                    {
+                    }, {
                         data: "class", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Клас'
-                    },
-                    {
+                    }, {
                         data: 'price', // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Цена'
-                    },
-                    {
+                    }, {
                         data: function (row, type, val, meta) {
                             if (row.isPaid) {
                                 return 'Платено';
@@ -41,8 +38,7 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Статус'
-                    },
-                    {
+                    }, {
                         data: function (row, type, val, meta) {
                             let number = Number(row.feeInDays);
                             if (number === 1) {
@@ -53,18 +49,15 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Такси в дни'
-                    },
-                    {
+                    }, {
                         data: 'forMonth', // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Такса за месец'
-                    },
-                    {
+                    }, {
                         data: "dateCreate", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Дата на създаване'
-                    },
-                    {
+                    }, {
                         data: function (row, type, val, meta) {
                             let lastEdit = row.lastEdit;
                             let dateCreate = row.dateCreate;
@@ -76,14 +69,11 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Редакция'
-                    },
-                    {
+                    }, {
                         title: 'Плащане'
-                    },
-                    {
+                    }, {
                         title: 'Редактиране'
-                    },
-                    {
+                    }, {
                         title: 'Изтриване'
                     },
                 ],
@@ -163,7 +153,7 @@ $(document).ready(function () {
                         } else if (this.id === 'editBtn') {
                             editButton(`${path}/edit/${id}`);
                         } else if (this.id === 'paidBtn') {
-                            paidOnButton(`/payment/product/${id}`);
+                            paidOnButton(`${path}/product/${id}`);
                         }
                     });
 

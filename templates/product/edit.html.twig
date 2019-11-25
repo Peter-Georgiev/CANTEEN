@@ -4,69 +4,53 @@
 
 {% block main %}
 
-    <div class="container body-content span=8 offset=2">
-        <div class="well" id="editProduct">
+    <div class="container body-content span=10 offset=2">
+        <div class="well" id="product" hidden>
             {{ form_start(form) }}
                 <fieldset>
-                    <legend>Редактиране на задължение</legend>
-
+                    <legend>Редакция на задължение</legend>
                     <div class="form-group">
-                        <div class="col-sm-4 ">
+                        <div class="col-sm-2" id="class">
+                            <label class="control-label" for="class_id">От клас</label>
+                            <select value="{{ form.vars['value'].student.class.id }}"
+                                    class="form-control" id="class_id" name="class[id]">
+                            </select>
+                        </div>
+                        <div class="col-sm-4" id="student">
+                            <label class="control-label" for="student_id">Ученик</label>
+                            <select  value="{{ form.vars['value'].student.id }}" style="width:100%;"
+                                     class="form-control" id="student_id" name="student[id]">
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
                             {{ form_row(form.forMonth, {
-                                label: 'Такса за месец'
+                                label: 'За месец'
                             }) }}
                         </div>
-                    </div>
-
-                    <div class="form-group">
                         <div class="col-sm-2">
                             {{ form_row(form.feeInDays, {
-                                label: 'Дължима такса в дни'
+                                label: 'Такса в дни'
                             }) }}
                         </div>
-                    </div>
-
-                    <div class="form-group">
                         <div class="col-sm-2">
                             {{ form_row(form.price, {
-                                label: 'Дължима такса в лева'
+                                label: 'Сума в лева'
                             }) }}
                         </div>
                     </div>
 
-                    <div class="form-group" id="class">
-                        <div class="col-sm-2">
-                            <label class="col-sm-2 control-label" for="class_id">Клас</label>
-                            <select class="form-control" id="class_id" name="class[id]">
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="student">
-                        <div class="col-sm-4 mt-5">
-                            <label class="col-sm-4 control-label" for="student_id">Ученик</label>
-                            <select class="form-control" id="student_id" name="student[id]">
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="form-group">
-                        <div class="col-sm-4 col-sm-offset-4">
+                        <div class="col-sm-5 col-sm-offset-5">
                             <a class="btn btn-default" href="{{ path('app_product_index') }}">Изход</a>
                             <button type="submit" class="btn btn-primary">Запис</button>
                         </div>
                     </div>
-
                 </fieldset>
             {{ form_end(form) }}
         </div>
     </div>
 
-
     <div class="container body-content span=8 offset=2">
-        <div class="well"  id="addOnBtn">
-            <button type="submit" class="btn btn-info center-block">Добавяне на задължение</button>
-        </div>
         <div id="notifications-table">
             <div id="loadingBox" class="notification">
                 <span>Зареждане на данните …</span>
@@ -75,14 +59,10 @@
                 <span>Грешка в данните!</span>
             </div>
         </div>
-        <div class="table-responsive">
-            <table id="dataTable"  class="display" cellspacing="0" width="100%">
-            </table>
-        </div>
     </div>
 
 {% endblock %}
 
 {% block jsCustomPage %}
-    {{ encore_entry_script_tags('pageProductAjax') }}
+    {{ encore_entry_script_tags('pageProductEditAjax') }}
 {% endblock %}

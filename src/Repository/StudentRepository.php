@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Student;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Student|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,43 +14,15 @@ use Doctrine\ORM\QueryBuilder;
  */
 class StudentRepository extends ServiceEntityRepository
 {
-
-    /**
-     * @param string|null $term
-     */
-    public function getWithSearchQueryBuilder(?string $term): QueryBuilder
-    {
-        return $term;
-            //->orderBy('c.createdAt', 'DESC');
-    }
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Student::class);
     }
 
-    /**
-     * @return mixed
-     */
-    public function findAllStudent()
-    {
-
-       return $this->createQueryBuilder('s')
-            ->select('s.id', 's.fullName', 's.isActive', 'c.name AS className',
-                't.fullName AS teacherFullName',
-                'p.dateCreate', 'p.price', 'p.forMonth', 'p.feeInDays', 'p.isPaid'
-            )
-            ->innerJoin('s.classes', 'c')
-            ->innerJoin('s.teachers', 't')
-            ->innerJoin('s.products', 'p')
-            ->getQuery()
-            ->getResult();
-    }
-
     public function findByFullName(Student $student)
     {
          return $this->createQueryBuilder('s')
-            ->innerJoin('s.classes', 'c')
+            ->innerJoin('s.class', 'c')
             ->where('s.fullName = ?1')
             ->andWhere('c.name = ?2')
             ->setParameter(1, $student->getFullName())
@@ -59,6 +30,17 @@ class StudentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findAllStudentsByUserId($userId)
+    {
+        return $this->createQueryBuilder('student')
+            ->innerJoin('student.users', 'users')
+            ->where('users.id = ?1')
+            ->setParameter(1, $userId)
+            ->getQuery()
+            ->getResult();
+    }
+
 
     // /**
     //  * @return Student[] Returns an array of Student objects

@@ -4,15 +4,8 @@
 
 {% block main %}
 
-    <div id="product_create" class="container body-content span=8 offset=2" hidden>
-        <div class="well">
-            <fieldset>
-            </fieldset>
-        </div>
-    </div>
-
     <div class="container body-content span=8 offset=2">
-        <div class="well"  id="addOnBtn">
+        <div class="well"  id="addOnBtn" hidden>
             <button type="submit" class="btn btn-info center-block">Добавяне на задължение</button>
         </div>
         <div id="notifications-table">
@@ -24,8 +17,8 @@
             </div>
         </div>
         <div class="table-responsive">
-            <table id="dataTable"  class="display" cellspacing="0" width="100%">
-            </table>
+            <legend>Информация за всички ученици с въведени задължения</legend>
+            <table id="dataTable"  class="display" cellspacing="0" width="100%"></table>
         </div>
     </div>
 

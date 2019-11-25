@@ -11,27 +11,28 @@
                 <legend>Плащане на задължение</legend>
                 <table class="table table-striped">
                     <thead>
-                    <tr>
-                        <th scope="col">Име на ученик</th>
-                        <th scope="col">Клас</th>
-                        <th scope="col">Цена за плащане</th>
-                        <th scope="col">Такса в дни</th>
-                        <th scope="col">Такса за месец</th>
-                        <th scope="col">Статус</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">Име на ученик</th>
+                            <th scope="col">Клас</th>
+                            <th scope="col">Цена за плащане</th>
+                            <th scope="col">Такса в дни</th>
+                            <th scope="col">Такса за месец</th>
+                            <th scope="col">Статус</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>{{ product.student.fullName }}</td>
-                        <td>{{ product.student.class.name }}</td>
-                        <td>{{ product.price }} лв.</td>
-                        <td>{{ product.feeInDays }}</td>
-                        <td>{{ product.forMonth|date('m.Y') }}</td>
-                        {% if product.isPaid %}
-                            <td>Платено</td>
-                        {% else %}
-                            <td>Неплтено</td>
-                        {% endif %}
+                        <tr>
+                            <td>{{ product.student.fullName }}</td>
+                            <td>{{ product.student.class.name }}</td>
+                            <td>{{ product.price }} лв.</td>
+                            <td>{{ product.feeInDays }}</td>
+                            <td>{{ product.forMonth|date('m.Y') }}</td>
+                            {% if product.isPaid %}
+                                <td>Платено</td>
+                            {% else %}
+                                <td>Неплтено</td>
+                            {% endif %}
+                        </tr>
                     </tbody>
                 </table>
 
@@ -72,7 +73,6 @@
                         <button type="submit" class="btn btn-primary">Плащане</button>
                     </div>
                 </div>
-
             </fieldset>
             {{ form_end(form) }}
         </div>

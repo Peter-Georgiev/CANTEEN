@@ -20,6 +20,10 @@ class PricePerDayController extends AbstractController
      */
     public function index(Request $request)
     {
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
+
         $pricesPerDays = $this->getDoctrine()->getRepository(PricePerDay::class)->findAll();
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {

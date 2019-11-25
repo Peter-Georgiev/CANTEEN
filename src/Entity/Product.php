@@ -49,6 +49,11 @@ class Product
     private $feeInDays;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMonthEnded;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Student", inversedBy="products")
      */
     private $students;
@@ -62,10 +67,11 @@ class Product
     public function __construct()
     {
         $datetime = new \DateTime('now');
-        $this->forMonth = $datetime;
+        $this->forMonth = $datetime->modify('+1 month');
         $this->dateCreate = $datetime;
         $this->lastEdit = $datetime;
         $this->isPaid = false;
+        $this->isMonthEnded = false;
         $this->students = new ArrayCollection();
     }
 
@@ -142,6 +148,18 @@ class Product
     public function setForMonth(\DateTimeInterface $forMonth): self
     {
         $this->forMonth = $forMonth;
+
+        return $this;
+    }
+
+    public function getIsMonthEnded(): ?bool
+    {
+        return $this->isMonthEnded;
+    }
+
+    public function setIsMonthEnded(bool $isMonthEnded): self
+    {
+        $this->isMonthEnded = $isMonthEnded;
 
         return $this;
     }

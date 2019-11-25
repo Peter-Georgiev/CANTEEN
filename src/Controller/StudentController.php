@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ClassTable;
 use App\Entity\Student;
 use App\Entity\Teacher;
+use App\Entity\User;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -22,15 +23,21 @@ class StudentController extends AbstractController
      */
     public function index()
     {
-        $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
-        return $this->render('student/index.html.twig', ['students' => $students
-        ]);
+        $students = null;
+        if ($this->getUser()->isAdmin()) {
+            $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
+        } else {
+            $students = $this->getDoctrine()->getRepository(Student::class)
+                ->findAllStudentsByUserId($this->getUser()->getId());
+        }
+
+        return $this->render('student/index.html.twig', ['students' => $students]);
     }
 
     /**
-     * @param Request $request
      * @Route("/student/create", name="student_create")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function createAction(Request $request)
@@ -43,14 +50,15 @@ class StudentController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $classTable = $this->getDoctrine()->getRepository(ClassTable::class)
                     ->find($request->get('class_table')['id']);
-                $teacher = $this->getDoctrine()->getRepository(Teacher::class)
-                    ->find($request->get('teacher')['id']);
+                $user = $this->getDoctrine()->getRepository(User::class)
+                    ->find($request->get('user')['id']);
                 $student->setClass($classTable);
-                $student->setTeacher($teacher);
+                $student->setUser($user);
+
                 // Uppercase the first character of each word in a string
                 $fullName = $this->strToLoweAndUcFirst($student->getFullName());
                 $student->setFullName($fullName);
-
+                // Find existing student
                 $this->findExistingStudent($student);
 
                 try {
@@ -63,23 +71,38 @@ class StudentController extends AbstractController
                 }
             }
 
-            $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
-            $classTables = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
-            $teachers = $this->getDoctrine()->getRepository(Teacher::class)->findAll();
+            $users = null;
+            $students = null;
+            $classTables = null;
+            if ($this->getUser()->isAdmin()) {
+                $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
+                $users = $this->getDoctrine()->getRepository(User::class)->findAllTeachers();
+                $classTables = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
+            } else {
+                $students = $this->getDoctrine()->getRepository(Student::class)
+                    ->findAllStudentsByUserId($this->getUser()->getId());
+                $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
+                    ->findAllActiveStudentsByUserId($this->getUser()->getId());
+                $users[] = $this->getDoctrine()->getRepository(User::class)
+                    ->find($this->getUser()->getId());
+            }
+
             return $this->render('student/create.html.twig', ['form' => $form->createView(),
-                'students' => $students, 'classTables' => $classTables, 'teachers' => $teachers
+                'students' => $students, 'classTables' => $classTables, 'users' => $users
             ]);
         } catch (\Exception $e) {
             $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
-            return $this->render('student/index.html.twig', [
-                'students' => $students, 'danger' => $e->getMessage()
-            ]);
+            return $this->render('student/index.html.twig', ['students' => $students, 'danger' => $e->getMessage()]);
         }
     }
 
     /**
+     *
      * @Route("/student/edit/{id}", name="student_edit")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param $id
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function editAction($id, Request $request)
     {
@@ -96,15 +119,15 @@ class StudentController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $classTable = $this->getDoctrine()->getRepository(ClassTable::class)
                     ->find($request->get('class_table')['id']);
-                $teacher = $this->getDoctrine()->getRepository(Teacher::class)
-                    ->find($request->get('teacher')['id']);
+                $user = $this->getDoctrine()->getRepository(User::class)
+                    ->find($request->get('user')['id']);
                 $student->setClass($classTable);
-                $student->setTeacher($teacher);
+                $student->setUser($user);
                 // Uppercase the first character of each word in a string
                 $fullName = $this->strToLoweAndUcFirst($student->getFullName());
                 $student->setFullName($fullName);
-
-               $this->findExistingStudent($student, $name);
+                // Find existing student
+                $this->findExistingStudent($student, $name);
 
                 try {
                     $em = $this->getDoctrine()->getManager();
@@ -115,24 +138,37 @@ class StudentController extends AbstractController
                     throw new \Exception('Възникна грешка при промяна на ученик '. $student->getFullName() .'!');
                 }
             }
-            $classTables = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
-            $teachers = $this->getDoctrine()->getRepository(Teacher::class)->findAll();
-            $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
+
+            $users = null;
+            $students = null;
+            $classTables = null;
+            if ($this->getUser()->isAdmin()) {
+                $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
+                $users = $this->getDoctrine()->getRepository(User::class)->findAllTeachers();
+                $classTables = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
+            } else {
+                $students = $this->getDoctrine()->getRepository(Student::class)
+                    ->findAllStudentsByUserId($this->getUser()->getId());
+                $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
+                    ->findAllActiveStudentsByUserId($this->getUser()->getId());
+                $users[] = $this->getDoctrine()->getRepository(User::class)
+                    ->find($this->getUser()->getId());
+            }
+
             return $this->render('student/edit.html.twig', ['form' => $form->createView(),
-                'students' => $students, 'classTables' => $classTables, 'teachers' => $teachers,
-                'student' => $student
+                'students' => $students, 'classTables' => $classTables, 'users' => $users, 'student' => $student
             ]);
         } catch (\Exception $e) {
             $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
-            return $this->render('student/index.html.twig', [
-                'students' => $students, 'danger' => $e->getMessage()
-            ]);
+            return $this->render('student/index.html.twig', ['students' => $students, 'danger' => $e->getMessage()]);
         }
     }
 
     /**
      * @Route("/student/delete/{id}", name="student_delete")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function deleteAction($id)
     {
@@ -170,16 +206,9 @@ class StudentController extends AbstractController
             10/*limit per page*/
         );
 
-        //$student = new Student();
-        //$form = $this->createForm(StudentType::class, $student);
-        //$form->handleRequest($request);
-
         $students = $this->getDoctrine()->getRepository(Student::class)->findAll();
-        dd($students);
 
-        return $this->render('student/pagination-test.html.twig', [//'form' => $form->createView(),
-            'pagination' => $pagination,
-        ]);
+        return $this->render('student/pagination-test.html.twig', ['pagination' => $pagination]);
     }
 
     private function strToLoweAndUcFirst(string $str)

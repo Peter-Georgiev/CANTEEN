@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use phpDocumentor\Reflection\DocBlock\Tags\Return_;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -20,66 +19,50 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function findPaymentByClass($class)
-    {
-        return $this->createQueryBuilder('p')
-            ->select( 's.firstName', 's.middleName', 's.lastName', 'c.name',
-                'p.id', 'p.price AS productPrice', 'p.dateCreate AS productDateCreate', 'p.feeInDays',
-                'p.lastEdit AS productLastEdit', 'p.forMonth', 'p.isPaid AS productIsPaid',
-                'pay.price AS paymentPrice', 'pay.payment', 'pay.datePurchases AS paymentDatePurchases',
-                'pay.lastEdit AS paymentLastEdit'
-                )
-            ->innerJoin('p.students', 's')
-            ->innerJoin('p.payment', 'pay')
-            ->innerJoin('s.classes', 'c')
-            ->andWhere('c.name = ?1')
-            ->setParameter(1, $class)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    public function findDontPaymentByClass($class)
-    {
-        return $this->createQueryBuilder('p')
-            ->select( 's.firstName', 's.middleName', 's.lastName', 'c.name',
-                'p.id', 'p.price AS productPrice', 'p.dateCreate AS productDateCreate',
-                'p.lastEdit AS productLastEdit', 'p.forMonth', 'p.isPaid AS productIsPaid'
-            )
-            ->innerJoin('p.students', 's')
-            ->innerJoin('s.classes', 'c')
-            ->andWhere('c.name = ?1')
-            ->setParameter(1, $class)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
     public function findAllActiveStudents()
     {
         return $this->createQueryBuilder('p')
             ->select( )
-            ->innerJoin('p.students', 's')
-            ->innerJoin('s.classes', 'c')
-            ->innerJoin('s.teachers', 't')
-            ->where('s.isActive = 1')
+            ->innerJoin('p.students', 'students')
+            ->innerJoin('students.class', 'class')
+            ->innerJoin('students.users', 'users')
+            ->where('students.isActive = 1')
             ->getQuery()
             ->getResult()
         ;
     }
 
-    public function updateIsPaidInProduct($productId, $isPaid)
+    public function findAllActiveStudentsByUserId($userId)
     {
         return $this->createQueryBuilder('p')
-            ->update()
-            ->set('p.isPaid', '?1')
-            ->setParameter(1, $isPaid)
-            ->where('p.id = ?2')
-            ->setParameter(2, $productId)
+            ->select( )
+            ->innerJoin('p.students', 'students')
+            ->innerJoin('students.class', 'class')
+            ->innerJoin('students.users', 'users')
+            ->where('students.isActive = 1')
+            ->andWhere('users.id = ?1')
+            ->setParameter(1, $userId)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getResult()
+            ;
     }
 
+    public function findByExistingProduct(Product $product)
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.students', 's')
+            ->innerJoin('s.class', 'c')
+            ->where( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
+            ->andWhere('s.id = ?2')
+            ->andWhere('c.id = ?3')
+            ->andWhere('p.id != ?4')
+            ->setParameter(1, $product->getForMonth()->format('Y-m'))
+            ->setParameter(2, $product->getStudent()->getId())
+            ->setParameter(3, $product->getStudent()->getClass()->getId())
+            ->setParameter(4, intval($product->getId()))
+            ->getQuery()
+            ->getResult();
+    }
 
     // /**
     //  * @return Product[] Returns an array of Product objects

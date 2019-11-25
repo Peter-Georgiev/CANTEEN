@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -49,6 +50,11 @@ class User implements UserInterface
      * @ORM\Column(type="boolean")
      */
     private  $isDelete;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Student", mappedBy="users")
+     */
+    private $students;
 
     public function __construct()
     {
@@ -130,6 +136,11 @@ class User implements UserInterface
         return in_array("ROLE_SELLER", $this->getRoles());
     }
 
+    public function isTeacher() :bool
+    {
+        return in_array("ROLE_TEACHER", $this->getRoles());
+    }
+
     /**
      * @see UserInterface
      */
@@ -165,6 +176,24 @@ class User implements UserInterface
     public function setIsDelete(bool $isDelete)
     {
         $this->isDelete = $isDelete;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Student[]
+     */
+    public function getStudents(): Collection
+    {
+        return $this->students;
+    }
+
+    public function addStudent(Student $student): self
+    {
+        if (!$this->students->contains($student)) {
+            $this->students[] = $student;
+            $student->setClass($this);
+        }
 
         return $this;
     }

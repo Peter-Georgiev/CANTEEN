@@ -5,63 +5,49 @@
 {% block main %}
 
     <div class="container body-content span=8 offset=2">
-        <div class="well">
+        <div class="well" id="payment" hidden>
             {{ form_start(form) }}
             <fieldset>
-                <legend>педактиране на плащане</legend>
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th scope="col">Име на ученик</th>
-                        <th scope="col">Клас</th>
-                        <th scope="col">Цена за плащане</th>
-                        <th scope="col">Такса в дни</th>
-                        <th scope="col">Такса за месец</th>
-                        <th scope="col">Статус</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{ product.student.fullName }}</td>
-                        <td>{{ product.student.class.name }}</td>
-                        <td>{{ product.price }} лв.</td>
-                        <td>{{ product.feeInDays }}</td>
-                        <td>{{ product.forMonth|date('m.Y') }}</td>
-                        {% if product.isPaid %}
-                            <td>Платено</td>
-                        {% else %}
-                            <td>Неплтено</td>
-                        {% endif %}
-                    </tbody>
-                </table>
+                <legend>Редактиране на плащане</legend>
 
                 <div class="form-group">
-                    <div class="col-sm-4 ">
-                        {{ form_row(form.namePayer, {
-                            label: 'Име на вносителя.'
-                        }) }}
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <div class="col-sm-4">
-                        {{ form_row(form.price, {
-                            label: 'Дължима такса в лева.'
-                        }) }}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-4">
-                        {{ form_row(form.payment, {
-                            label: 'Въведи сума в лева.'
-                        }) }}
-                    </div>
-                </div>
-                <div class="form-group">
                     <div class="col-sm-4">
                         {{ form_row(form.seller, {
-                            label: 'Да се приеме от'
+                            label: 'Име на ученик'
+                        }) }}
+                    </div>
+                    <div class="col-sm-2">
+                        <label class="control-label" for="class_id">От клас</label>
+                        <input type="text" id="class_id" name="class[id]" class="form-control" required="required"
+                        value="{{ payment.products.student.class.name }}" readonly="readonly">
+                    </div>
+
+                    <div class="col-sm-2">
+                        <label class="control-label" for="class_id">За месец</label>
+                        <input type="text" id="product_forMonth" name="product[forMonth]" class="form-control"
+                               required="required" value="{{ payment.products.forMonth|date('m.Y') }}" readonly="readonly">
+                    </div>
+
+                    <div class="col-sm-2">
+                        {{ form_row(form.price, {
+                            label: 'Цена'
+                        }) }}
+                    </div>
+
+                    <div class="col-sm-2">
+                        {{ form_row(form.payment, {
+                            label: 'Плащане'
+                        }) }}
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form_row(form.namePayer, {
+                            label: 'Име на платеца'
+                        }) }}
+                    </div>
+                    <div class="col-sm-4">
+                        {{ form_row(form.seller, {
+                            label: 'Касиер'
                         }) }}
                     </div>
                 </div>
@@ -69,7 +55,7 @@
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-4">
                         <a class="btn btn-default" href="{{ path('payment') }}">Изход</a>
-                        <button type="submit" class="btn btn-primary">Плащане</button>
+                        <button type="submit" class="btn btn-primary">Запис</button>
                     </div>
                 </div>
 
@@ -79,17 +65,18 @@
     </div>
 
     <div class="container body-content span=8 offset=2">
-        <div id="loadingBox" class="notification">
-            <span>Loading …</span>
+        <div id="notifications-table">
+            <div id="errorBox" class="notification">
+                <span>Грешка в данните!</span>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table id="dataTable"  class="display" cellspacing="0" width="100%">
-            </table>
+        <div class="table-responsive" hidden>
+            <table id="dataTable"  class="display" cellspacing="0" width="100%"></table>
         </div>
     </div>
 
 {% endblock %}
 
 {% block jsCustomPage %}
-    {{ encore_entry_script_tags('pagePaymentAjax') }}
+    {{ encore_entry_script_tags('pagePaymentEditAjax') }}
 {% endblock %}

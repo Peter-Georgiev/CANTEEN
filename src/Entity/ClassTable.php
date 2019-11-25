@@ -24,7 +24,7 @@ class ClassTable
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Student", mappedBy="classes")
+     * @ORM\OneToMany(targetEntity="App\Entity\Student", mappedBy="class")
      */
     private $students;
 

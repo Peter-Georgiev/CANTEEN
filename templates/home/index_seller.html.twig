@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seller!{% endblock %}
+
+{% block body %}
+    <style>
+        div.one{
+            margin-top: 40px;
+            text-align: center;
+        }
+        a{
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
+
+    <div class="example-wrapper">
+        {% if app.getUser() %}
+            <h1 class="text-center">Здравей, {{ app.getUser().getFullName() }}! ✅</h1>
+            <div class="one">
+                <a type="button" class="btn btn-success btn-lg"  href="{{ path('payment_create') }}">
+                    Плащане
+                </a>
+            </div>
+            <div class="one">
+                <a type="button" class="btn btn-info btn-group-xs" href="{{ path('payment') }}">
+                    Справки за плащане
+                </a>
+                <a type="button" class="btn btn-info btn-group-xs" href="{{ path('app_product_index') }}">
+                    Справки за ученици с въведени задължения
+                </a>
+            </div>
+            <div class="one">
+                <a type="button" class="btn btn-warning btn-sm"  href="{{ path('payment_by_class') }}">
+                    Приключване на предходен месец
+                </a>
+                <a type="button" class="btn btn-info btn-sm" href="{{ path('payment_ended_mont_info') }}">
+                    Справка за приключени месеци
+                </a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

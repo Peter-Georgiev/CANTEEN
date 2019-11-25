@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ClassTable;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -28,45 +29,61 @@ class ClassTableRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByNameExclusionCurrentId($className, $classId)
+    public function findAllActiveStudentsByUserId($userId)
     {
-        $query = 'SELECT if(COUNT(*) > 0, true, false) AS isName 
-                FROM class_table AS c 
-                WHERE c.name = ? 
-                AND c.id NOT IN (SELECT c.id FROM class_table AS c WHERE c.id = ?)';
-        $conn = $this->getEntityManager()->getConnection();
-        $stm = $conn->prepare($query);
-        //$params = array('className' => $className, 'classId' => $classId);
-        //return $this->getEntityManager()->getConnection()
-          //  ->executeQuery($query, $params)
-            //->execute();
-        $stm->bindParam(1, $className);
-        $stm->bindParam(2, $classId);
-        $stm->execute();
-        return $stm->fetch()['isName'];
-    }
-
-    public function updateClassName($className, $classId)
-    {
-        return $this->createQueryBuilder('c')
-            ->update()
-            ->set('c.name', '?1')
-            ->setParameter(1, $className)
-            ->where('c.id = ?2')
-            ->setParameter(2, $classId)
+        return $this->createQueryBuilder('class_table')
+            ->select( )
+            ->innerJoin('class_table.students', 'students')
+            ->innerJoin('students.users', 'users')
+            ->where('students.isActive = 1')
+            ->andWhere('users.id = ?1')
+            ->setParameter(1, $userId)
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getResult();
     }
 
     public function findAllActiveStudents()
     {
         return $this->createQueryBuilder('c')
             ->select( )
-            ->innerJoin('c.students', 's')
-            ->where('s.isActive = 1')
+            ->innerJoin('c.students', 'student')
+            ->innerJoin('student.users', 'users')
+            ->where('student.isActive = 1')
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
+    }
+
+    public function findOnlyForPayment()
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.products', 'p')
+            ->where('p.isPaid = false' )
+            ->andWhere('p.isMonthEnded = false' )
+            ->andWhere( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
+            ->setParameter(1, (new \DateTime('now'))
+                ->modify('+1 month')->format('Y-m')
+            )
+            ->orderBy('c.name', 'ASC')
+            ->addOrderBy('s.fullName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByMonth(\DateTime $date)
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.products', 'p')
+            ->where('p.isPaid = true' )
+            ->andWhere('p.isMonthEnded = false' )
+            ->andWhere( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
+            ->setParameter(1, $date->format('Y-m')
+            )
+            ->orderBy('c.name', 'ASC')
+            //->addOrderBy('s.fullName', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     // /**

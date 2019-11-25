@@ -1,5 +1,5 @@
 import {table} from './applyDataTable.js'
-import {editButton, deleteButton, addOnButton, paidOnButton, rowTextDangerOnOff} from './button-row-table.js';
+import {editButton, deleteButton, addOnButton, rowTextDangerOnOff} from './button-row-table.js';
 import {bg} from './languageDataTable.js';
 const currentPathname = window.location.pathname;
 const path = '/product';
@@ -11,19 +11,20 @@ $(document).ready(function () {
         dataType:   'json',
         async:      true,
         success: function(data, status) {
+            console.log(data)
             table.dataTable({
                 data: data['products'],
                 rowId: 'id',
                 //pagingType: 'full_numbers', // "simple" option for 'Previous' and 'Next' buttons only
                 columns: [
                     {
-                        data: "student", // can be null or undefined
-                        defaultContent: `<i></i>`,
-                        title: 'Ученик'
-                    }, {
                         data: "class", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Клас'
+                    }, {
+                        data: "student", // can be null or undefined
+                        defaultContent: `<i></i>`,
+                        title: 'Ученик'
                     }, {
                         data: 'price', // can be null or undefined
                         defaultContent: `<i></i>`,
@@ -69,27 +70,27 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Редакция'
-                    }, {
+                    }, /*{
                         title: 'Плащане'
-                    }, {
+                    }, */{
                         title: 'Редактиране'
                     }, {
                         title: 'Изтриване'
                     },
                 ],
-                columnDefs: [{
+                columnDefs: [/*{
                     targets: -3,
                     data: function (row, type, val, meta) {
                         if (row.isPaid) {
-                            return "<button id='paidBtn' class='btn-default' disabled>Плащане!</button>";
+                            return "<button id='paidBtn' class='btn-info' disabled>Платено!</button>";
                         }
                         return  "<button id='paidBtn' class='btn-success'>Плащане!</button>";
                     },
-                }, {
+                }, */{
                     targets: -2,
                     data: function (row, type, val, meta) {
                         if (row.isPaid) {
-                            return "<button id='editBtn' class='btn-danger'>Редактиране!</button>";
+                            return "<button id='editBtn' class='btn-default' disabled>Редактиране!</button>";
                         }
                         return "<button id='editBtn' class='btn-warning'>Редактиране!</button>";
                     },
@@ -103,7 +104,7 @@ $(document).ready(function () {
                     },
                 }],
                 order: [
-                    [1, 'asc'], [0, 'asc'], [3, 'des']
+                    [0, 'asc'], [1, 'asc'], [3, 'des']
                 ],
                 language: bg.language,
                 dom: 'lfBSrtip',
@@ -153,7 +154,7 @@ $(document).ready(function () {
                         } else if (this.id === 'editBtn') {
                             editButton(`${path}/edit/${id}`);
                         } else if (this.id === 'paidBtn') {
-                            paidOnButton(`${path}/product/${id}`);
+                            //paidOnButton(`/payment/create/by/${id}`);
                         }
                     });
 
@@ -257,3 +258,4 @@ $(document).ready(function () {
         }
     }
 });
+export {path};

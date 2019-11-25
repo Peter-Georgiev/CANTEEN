@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Справка за месец!{% endblock %}
+
+{% block main %}
+    <div class="container body-content span=10 offset=2">
+        <div class="well" id="payment">
+            <form class="form-horizontal" action="{{ path('payment_ended_mont_info') }}" method="POST">
+                <fieldset>
+                    <legend>Справка за месец
+                        {% if month is defined %}
+                            <span>{{ month|date('m.Y') }}</span>
+                        {% endif %}
+                    </legend>
+                    <div class="form-group">
+                        <div class="col-sm-2" id="class">
+                            <label class="control-label" for="class_id">От клас</label>
+                            <select class="form-control" id="class_id" name="class[id]">
+                                {% for class in classes %}
+                                    <option value="{{ class.id }}">{{ class.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2" id="class">
+                            <label class="control-label" for="month">Месец</label>
+                            <input type="text" id="month" name="month" readonly="true"
+                                   class="monthPicker form-control" />
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-sm-5 col-sm-offset-5">
+                            <a class="btn btn-default" href="{{ path('app_product_index') }}">Изход</a>
+                            <button type="submit" class="btn btn-primary">Избор</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jsCustomPage %}
+    {{ encore_entry_script_tags('pageEndedMonthInfo') }}
+{% endblock %}

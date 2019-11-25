@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create payment!{% endblock %}
+
+{% block main %}
+
+    <div class="container body-content span=10 offset=2">
+        <div class="well" id="payment" hidden>
+            {{ form_start(form) }}
+                <fieldset>
+                    <legend>Плащане на задължение</legend>
+                    <div class="col-sm-1" hidden>
+                        <div class="form-group">
+                            <input type="text" id="product_id" name="product[id]" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2" id="class">
+                            <label class="control-label" for="class_id">От клас</label>
+                            <select class="form-control" id="class_id" name="class[id]"></select>
+                        </div>
+                        <div class="col-sm-4" id="student">
+                            <label class="control-label" for="student_id">Ученик</label>
+                            <select  style="width:100%;" class="form-control" id="student_id" name="student[id]"></select>
+                        </div>
+                        <div class="col-sm-2">
+                            {{ form_row(form.price, {
+                                label: 'Цена'
+                            }) }}
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <label for="product_forMonth" class="required">За месец</label>
+                                <input type="text" id="product_forMonth" name="product[forMonth]"
+                                       required="required" readonly="readonly" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            {{ form_row(form.payment, {
+                                label: 'Плащане'
+                            }) }}
+                        </div>
+                        <div class="col-sm-4">
+                            {{ form_row(form.namePayer, {
+                                label: 'Име на платеца'
+                            }) }}
+                        </div>
+                        <div class="col-sm-4">
+                            {{ form_row(form.seller, {
+                                label: 'Касиер'
+                            }) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-5 col-sm-offset-5">
+                            <a class="btn btn-default" href="{{ path('payment') }}">Изход</a>
+                            <button type="submit" class="btn btn-primary">Запис</button>
+                        </div>
+                    </div>
+                </fieldset>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <div class="container body-content span=8 offset=2">
+        <div id="notifications-table">
+            <div id="loadingBox" class="notification">
+                <span>Зареждане на данните …</span>
+            </div>
+            <div id="errorBox" class="notification">
+                <span>Грешка в данните!</span>
+            </div>
+        </div>
+        <div class="table-responsive" hidden>
+            <table id="dataTable"  class="display" cellspacing="0" width="100%"></table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block jsCustomPage %}
+    {{ encore_entry_script_tags('pagePaymentCreateAjax') }}
+{% endblock %}

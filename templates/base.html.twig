@@ -10,8 +10,8 @@
             {{ encore_entry_link_tags('app') }}
             <link rel="stylesheet" href="{{ asset('/js/data-tables/DataTables-1.10.18/css/jquery.dataTables.min.css') }}">
             <link rel="stylesheet" href="{{ asset('/js/data-tables/Responsive-2.2.2/css/responsive.dataTables.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('/css/jquery-ui.min.css') }}">
         {% endblock %}
-
     </head>
 
     {% block header %}
@@ -19,7 +19,7 @@
             <div class="navbar navbar-default navbar-static-top" role="navigation">
                 <div class="container">
                     <div class="navbar-header">
-                        <a href="{{ path('home') }}" class="navbar-brand">CANTEEN</a>
+                        <a href="{{ path('home') }}" class="navbar-brand">НАЧАЛО</a>
 
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                             <span class="icon-bar"></span>
@@ -29,45 +29,92 @@
                     </div>
                     <div class="navbar-collapse collapse">
                         <ul class="nav navbar-nav navbar-right">
-
-                            {% if app.getUser() %}
+                            {% if app.getUser() and app.getUser().isAdmin() %}
                                 <li class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Операции
-                                        <span class="caret"></span></a>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Ценоразпис
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{{ path('price_per_day') }}">
+                                                Цена за ден
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            {% if app.getUser() and (app.getUser().isAdmin() or app.getUser().isSeller())  %}
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Приключване на месец
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{{ path('payment_by_class') }}">
+                                                Приключване на предходен месец
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('payment_ended_mont_info') }}">
+                                                Справка за приключени на месеци
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            {% if app.getUser() and (app.getUser().isAdmin() or app.getUser().isSeller()) %}
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Плащане
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{{ path('payment_create') }}">
+                                                Плащане на задължение
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('payment') }}">
+                                                Всички плащания
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            {% if app.getUser() and (app.getUser().isTeacher() or app.getUser().isAdmin()) %}
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Задължения
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="{{ path('product_create') }}">
+                                                Добавяне на задължение
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{{ path('app_product_index') }}">
+                                                Информация за yчениците
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Клас/Ученици
+                                        <span class="caret"></span>
+                                    </a>
                                     <ul class="dropdown-menu">
                                         <li>
                                             <a href="{{ path('class') }}">
                                                 Клас
                                             </a>
                                         </li>
-
-                                        <li>
-                                            <a href="{{ path('teacher') }}">
-                                                Курсови ръководители
-                                            </a>
-                                        </li>
-
                                         <li>
                                             <a href="{{ path('student') }}">
                                                 Ученици
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{{ path('price_per_day') }}">
-                                                Цена на ден
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{{ path('app_product_index') }}">
-                                                Добавяне на задължение/плащане
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a href="{{ path('payment') }}">
-                                                Плащания
                                             </a>
                                         </li>
                                     </ul>
@@ -83,16 +130,14 @@
                                        href="#">{{ app.getUser().getUsername() }}
                                         <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
-
                                         <li class="text-center">
-                                            <a href="{{ path('user_all') }}" class="text-center">
-                                                Виж всички потребители
+                                            <a href="{{ path('user_edit', {id: app.getUser().getId() }) }}">
+                                                Профил - име презиме фамилия/достъп
                                             </a>
                                         </li>
                                         <li class="text-center">
-                                            <a href="{{ path('user_edit', {id: app.getUser().getId() }) }}">
-                                                Редактиране на потребител
-                                                <i class="text-info">{{ app.getUser().getUsername() }}</i>
+                                            <a href="{{ path('user_edit_pass', {id: app.getUser().getId() }) }}">
+                                                Профил - потребителско име/парола
                                             </a>
                                         </li>
                                         {% if app.getUser() and app.getUser().isAdmin() %}
@@ -101,18 +146,20 @@
                                             </li>
                                         {% endif %}
                                         <li class="text-center">
+                                            <a href="{{ path('user_all') }}" class="text-center">
+                                                Всички профили
+                                            </a>
+                                        </li>
+                                        <li class="text-center">
                                             <a href="{{ path('app_logout') }}">Изход</a>
                                         </li>
-
                                     </ul>
                                 </li>
 
                             {% else %}
-
                                 <li>
                                     <a href="{{ path('app_login') }}">ВХОД</a>
                                 </li>
-
                             {% endif %}
                         </ul>
                     </div>
@@ -173,6 +220,10 @@
         <script src="{{ asset('/js/data-tables/JSZip-2.5.0/jszip.min.js') }}"></script>
         <script src="{{ asset('/js/data-tables/pdfmake-0.1.36/pdfmake.min.js') }}"></script>
         <script src="{{ asset('/js/data-tables/pdfmake-0.1.36/vfs_fonts.js') }}"></script>
+
+
+        <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
+
     {% endblock %}
 
     {% block jsCustomPage %}{% endblock %}

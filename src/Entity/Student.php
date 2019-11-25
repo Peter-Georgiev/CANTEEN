@@ -32,12 +32,12 @@ class Student
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\ClassTable", inversedBy="students")
      */
-    private $classes;
+    private $class;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Teacher", inversedBy="students")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="user")
      */
-    private $teachers;
+    private $users;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="students")
@@ -82,24 +82,24 @@ class Student
 
     public function getClass(): ?ClassTable
     {
-        return $this->classes;
+        return $this->class;
     }
 
     public function setClass(?ClassTable $class): self
     {
-        $this->classes = $class;
+        $this->class = $class;
 
         return $this;
     }
 
-    public function getTeacher(): ?Teacher
+    public function getUser(): ?User
     {
-        return $this->teachers;
+        return $this->users;
     }
 
-    public function setTeacher(?Teacher $teacher): self
+    public function setUser(?User $user): self
     {
-        $this->teachers = $teacher;
+        $this->users = $user;
 
         return $this;
     }

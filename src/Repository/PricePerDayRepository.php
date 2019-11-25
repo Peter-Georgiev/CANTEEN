@@ -19,6 +19,16 @@ class PricePerDayRepository extends ServiceEntityRepository
         parent::__construct($registry, PricePerDay::class);
     }
 
+    public function findOnlyActivePrice()
+    {
+        return $this->createQueryBuilder('p')
+            ->select()
+            ->where('p.isActive = :value')
+            ->setParameter('value', true)
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return PricePerDay[] Returns an array of PricePerDay objects
     //  */

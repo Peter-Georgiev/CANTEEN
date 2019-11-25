@@ -53,6 +53,11 @@ class Payment
     private $lastEditUser;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMonthEnded;
+
+    /**
      * @ORM\OneToOne(targetEntity="App\Entity\Product", inversedBy="payment")
      */
     private $products;
@@ -62,6 +67,7 @@ class Payment
         $datetime = new \DateTime('now');
         $this->datePurchases = $datetime;
         $this->lastEdit = $datetime;
+        $this->isMonthEnded = false;
         $this->products = new ArrayCollection();
     }
 
@@ -150,6 +156,18 @@ class Payment
     public function setLastEditUser(string $lastEditUser): self
     {
         $this->lastEditUser = $lastEditUser;
+
+        return $this;
+    }
+
+    public function getIsMonthEnded(): ?bool
+    {
+        return $this->isMonthEnded;
+    }
+
+    public function setIsMonthEnded(bool $isMonthEnded): self
+    {
+        $this->isMonthEnded = $isMonthEnded;
 
         return $this;
     }

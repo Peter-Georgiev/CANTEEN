@@ -6,51 +6,50 @@
 
     <div class="container body-content span=4 offset=2">
         <div class="well"  id="edit" >
-            <label for="edit" class="required" >Редактиране името на ученика</label>
+            <label for="edit" class="required" >Редактиране на ученик</label>
             {{ form_start(form) }}
             <fieldset>
                 <div class="form-group">
-                    <div class="col-sm-4 ">
+                    <div class="col-sm-4 col-sm-offset-2">
                         {{ form_row(form.fullName, {
                             label: 'Име на ученика'
                         }) }}
                     </div>
+
+                    <div class="col-sm-4 col-sm-offset-2">
+                        <div class="form-group">
+                            <label class="control-label" for="edit_class_name">От клас</label>
+                            <select class="form-control" id="edit_class_name" name="class_table[id]">
+                                <option  value="{{ student.class.id }}" >{{ student.class.name }}</option>
+                                {% for classTable in classTables %}
+                                    <option value="{{ classTable.id }}">{{ classTable.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <div class="col-sm-4 ">
+                    <div class="col-sm-4 col-sm-offset-2">
+                        <div class="form-group">
+                            <label class="control-label" for="edit_user_name">Курсов ръководител</label>
+                            <select class="form-control" id="edit_user_name" name="user[id]">
+                                <option  value="{{ student.user.id }}" >{{ student.user.fullName }}</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.fullName }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-sm-offset-2">
                         {{ form_row(form.isActive, {
                             label: 'Стаус активен/неактивен'
                         }) }}
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label class="col-sm-4 control-label" for="edit_class_name">От клас</label>
-                    <div class="col-sm-4">
-                        <select class="form-control" id="edit_class_name" name="class_table[id]">
-                            <option  value="{{ student.class.id }}" >{{ student.class.name }}</option>
-                            {% for classTable in classTables %}
-                                <option value="{{ classTable.id }}">{{ classTable.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="col-sm-4 control-label" for="edit_teacher_name">Курсов ръководител</label>
-                    <div class="col-sm-4">
-                        <select class="form-control" id="edit_teacher_name" name="teacher[id]">
-                            <option  value="{{ student.teacher.id }}" >{{ student.teacher.fullName }}</option>
-                            {% for teacher in teachers %}
-                                <option value="{{ teacher.id }}">{{ teacher.fullName }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-sm-4 col-sm-offset-4">
+                    <div class="col-sm-5 col-sm-offset-5">
                         <a class="btn btn-default" href="{{ path('student') }}">Изход</a>
                         <button type="submit" class="btn btn-primary">Запис</button>
                     </div>
@@ -69,50 +68,50 @@
         </div>
         <div class="table-responsive">
             <table id="dataTable"  class="display" cellspacing="0" width="100%">
-
                 <thead>
-                <tr>
-                    <th class="th-sm">Ученик</th>
-                    <th class="th-sm">Статус</th>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Класен</th>
-                    <th class="th-sm">Заявки</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Ученик</th>
+                        <th class="th-sm">Статус</th>
+                        <th class="th-sm">Класен</th>
+                        <th class="th-sm">Заявки</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for student in students %}
-                    <tr id="{{ student.id }}">
-                        <td>{{ student.fullName }}</td>
-                        {% if student.active == true %}
-                            <td>Активен</td>
-                        {% else %}
-                            <td>Нe активен</td>
-                        {% endif %}
-                        <td val="{{ student.class.id }}">{{ student.class.name }}</td>
-                        <td val="{{ student.teacher.id }}">{{ student.teacher.fullName }}</td>
-                        <td>{{ student.products.count }}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
+                    {% for student in students %}
+                        <tr id="{{ student.id }}">
+                            <td val="{{ student.class.id }}">{{ student.class.name }}</td>
+                            <td>{{ student.fullName }}</td>
+                            {% if student.active == true %}
+                                <td>Активен</td>
+                            {% else %}
+                                <td>Нe активен</td>
+                            {% endif %}
+                            <td val="{{ student.user.id }}">{{ student.user.fullName }}</td>
+                            <td>{{ student.products.count }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
                 <tfoot>
-                <tr>
-                    <th class="th-sm">Ученик</th>
-                    <th class="th-sm">Статус</th>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Класен</th>
-                    <th class="th-sm">Заявки</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Ученик</th>
+                        <th class="th-sm">Статус</th>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Класен</th>
+                        <th class="th-sm">Заявки</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </tfoot>
             </table>
         </div>
     </div>
 {% endblock %}
+
 {% block jsCustomPage %}
     {{ encore_entry_script_tags('pageStudent') }}
 {% endblock %}

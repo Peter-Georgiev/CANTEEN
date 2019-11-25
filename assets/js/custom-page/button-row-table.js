@@ -20,6 +20,41 @@ function rowTextDangerOnOff(isOn = true) {
     });
 }
 function deleteButton(pathname, rowTable, messages) {
+    let msg = `!!! ВНИМАНИЕ !!!\n` + messages;
+    function confirmDialog(msg) {
+        return new Promise(function (resolve, reject) {
+            let add = $('div #add');
+            let edit = $('div #edit');
+            let addOnBtn = $('#addOnBtn');
+
+            if (add.css('display') !== 'none') {
+                add.hide();
+                addOnBtn.show();
+            }
+
+            if (edit.css('display') !== 'none') {
+                edit.hide();
+                addOnBtn.show();
+            }
+
+            let confirmed = window.confirm(msg);
+
+            return confirmed ? resolve(true) : reject(false);
+        });
+    }
+
+    function href(pathname) {
+        window.location.href = pathname;
+    }
+
+    function escape() {
+        alert('Операцията отказана!');
+    }
+
+    confirmDialog(msg)
+        .then(() =>  href(pathname) )
+        .catch(err => escape());
+/*
     let promise = new Promise(function(resolve, reject) {
         rowTextDangerOnOff(false);
 
@@ -38,18 +73,18 @@ function deleteButton(pathname, rowTable, messages) {
         }
 
         setTimeout(function() { resolve([
-                `${add.css('display')}`,
-                `${rowTable.removeClass("text-danger")}`
+
             ]);
-        }, 300);
+        }, 30);
     });
 
     promise.then(function(value) {
-        if (confirm(`!!! ВНИМАНИЕ !!!\n` + messages)) {
+        if (confirm(`!!! ВНИМАНИЕ !!!\n` + messages + ' patch:' + pathname)) {
             window.location.href = pathname;
         }
         return false;
     })
+ */
 }
 
 function editButton(pathname) {
@@ -67,4 +102,8 @@ function paidOnButton(pathname) {
     window.location.href = pathname;
 }
 
-export {editButton, deleteButton, addOnButton, rowTextDangerOnOff, paidOnButton};
+function printPdfButton(pathname) {
+    window.location.href = pathname;
+}
+
+export {editButton, deleteButton, addOnButton, rowTextDangerOnOff, paidOnButton, printPdfButton};

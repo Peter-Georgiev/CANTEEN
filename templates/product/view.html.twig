@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Save product!{% endblock %}
+
+{% block main %}
+
+    <div class="container body-content span=10 offset=2">
+        <div class="well" id="product3">
+            <fieldset>
+                <legend>Задължение</legend>
+                <div class="form-group">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Клас</th>
+                                <th scope="col">Име презиме фамиля</th>
+                                <th scope="col">За месец</th>
+                                <th scope="col">За година</th>
+                                <th scope="col">Такса за</th>
+                                <th scope="col">Дължима сума</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ product.student.class.name }}</td>
+                                <td>{{ product.student.fullName }}</td>
+                                <td>{{ product.forMonth | date('m') }}</td>
+                                <td>{{ product.forMonth | date('Y') }}</td>
+                                <td>{{ product.feeInDays }} дни</td>
+                                <td>{{ product.price }} лева</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-5 col-sm-offset-5">
+                        <a class="btn btn-info" href="{{ path('app_product_index') }}">Всички</a>
+                        <a class="btn btn-warning" href="{{ path('product_edit', {id: product.id}) }}">Редактиране</a>
+                        <a class="btn btn-success" href="{{ path('product_create') }}">Добави нов</a>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+    </div>
+
+{% endblock %}

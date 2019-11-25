@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,8 +25,8 @@ class RegistrationFormType extends AbstractType
                 'type' => PasswordType::class,
                 'options' => ['attr' => ['class' => 'password-field']],
                 'required' => true,
-                'first_options'  => ['label' => 'Password'],
-                'second_options' => ['label' => 'Repeat Password'],
+                'first_options'  => ['label' => 'Парола'],
+                'second_options' => ['label' => 'Повтори паролата'],
                 'invalid_message' => 'Полетата за парола трябва да съвпадат.',
                 'mapped' => false,
                 'constraints' => [
@@ -35,7 +34,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Моля, въведете парола.',
                     ]),
                     new Length([
-                        'min' => 3,
+                        'min' => 6,
                         'minMessage' => 'Паролата ви трябва да бъде поне  {{ limit }} символа',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,

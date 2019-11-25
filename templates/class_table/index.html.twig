@@ -3,7 +3,6 @@
 {% block title %}Class page!{% endblock %}
 
 {% block main %}
-
     <div class="container body-content span=8 offset=2">
         <div class="well"  id="addOnBtn">
             <button type="submit" class="btn btn-info center-block">Добавяне на клас</button>
@@ -15,12 +14,12 @@
             <table id="dataTable"  class="display" cellspacing="0" width="100%">
 
                 <thead>
-                <tr>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Обвързан с брой ученици</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Обвързан с брой ученици</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </thead>
                 <tbody>
                 {% for classTable in classTables %}
@@ -33,18 +32,16 @@
                 {% endfor %}
                 </tbody>
                 <tfoot>
-                <tr>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Обвързан</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Обвързан</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </tfoot>
             </table>
         </div>
     </div>
-
-
 {% endblock %}
 
 {% block jsCustomPage %}

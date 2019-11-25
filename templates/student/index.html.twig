@@ -13,45 +13,44 @@
         </div>
         <div class="table-responsive">
             <table id="dataTable"  class="display" cellspacing="0" width="100%">
-
                 <thead>
-                <tr>
-                    <th class="th-sm">Ученик</th>
-                    <th class="th-sm">Статус</th>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Класен</th>
-                    <th class="th-sm">Заявки</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Ученик</th>
+                        <th class="th-sm">Статус</th>
+                        <th class="th-sm">Класен</th>
+                        <th class="th-sm">Заявки</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {% for student in students %}
-                    <tr id="{{ student.id }}">
-                        <td>{{ student.fullName }}</td>
-                        {% if student.active == true %}
-                            <td>Активен</td>
-                        {% else %}
-                            <td>Нe активен</td>
-                        {% endif %}
-                        <td val="{{ student.class.id }}">{{ student.class.name }}</td>
-                        <td val="{{ student.teacher.id }}">{{ student.teacher.fullName }}</td>
-                        <td>{{ student.products.count }}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
+                    {% for student in students %}
+                        <tr id="{{ student.id }}">
+                            <td val="{{ student.class.id }}">{{ student.class.name }}</td>
+                            <td>{{ student.fullName }}</td>
+                            {% if student.active == true %}
+                                <td>Активен</td>
+                            {% else %}
+                                <td>Нe активен</td>
+                            {% endif %}
+                            <td val="{{ student.user.id }}">{{ student.user.fullName }}</td>
+                            <td>{{ student.products.count }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
                 <tfoot>
-                <tr>
-                    <th class="th-sm">Ученик</th>
-                    <th class="th-sm">Статус</th>
-                    <th class="th-sm">Клас</th>
-                    <th class="th-sm">Класен</th>
-                    <th class="th-sm">Заявки</th>
-                    <th class="th-sm">Редактиране</th>
-                    <th class="th-sm">Изтриване</th>
-                </tr>
+                    <tr>
+                        <th class="th-sm">Ученик</th>
+                        <th class="th-sm">Статус</th>
+                        <th class="th-sm">Клас</th>
+                        <th class="th-sm">Класен</th>
+                        <th class="th-sm">Заявки</th>
+                        <th class="th-sm">Редактиране</th>
+                        <th class="th-sm">Изтриване</th>
+                    </tr>
                 </tfoot>
             </table>
         </div>

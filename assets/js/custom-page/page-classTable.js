@@ -45,7 +45,7 @@ $(document).ready(function () {
 
             table.on('click', 'button', function () {
                 let rowTable = $(this).parent().parent();
-                rowTable.addClass("text-danger");
+                //rowTable.addClass("text-danger");
                 let rowText = rowTable.children().map(function(){
                     return $.trim($(this).text());
                 }).get();

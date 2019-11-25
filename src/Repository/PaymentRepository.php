@@ -20,6 +20,52 @@ class PaymentRepository extends ServiceEntityRepository
     }
 
 
+    public function findAllNotCompletedMonth()
+    {
+        return $this->createQueryBuilder('payment')
+            ->select()
+            ->innerJoin('payment.products', 'products')
+            ->innerJoin('products.students', 'students')
+            ->where('payment.isMonthEnded = false')
+            //->orWhere('products.isMonthEnded = false')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findNotCompleteMonthByClassIdAndMonth($classId, \DateTime $date)
+    {
+        return $this->createQueryBuilder('payment')
+            ->select()
+            ->innerJoin('payment.products', 'products')
+            ->innerJoin('products.students', 'students')
+            ->innerJoin('students.class', 'class')
+            ->where('class.id = ?1')
+            ->andWhere('payment.isMonthEnded = false')
+            ->andWhere('products.isMonthEnded = false')
+            ->andWhere( "DATE_FORMAT(products.forMonth, '%Y-%m') = ?2" )
+            ->setParameter(1, $classId)
+            ->setParameter(2, $date->format('Y-m'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findEndedMonthByClassIdAndDate($classId, \DateTime $date)
+    {
+        return $this->createQueryBuilder('payment')
+            ->select()
+            ->innerJoin('payment.products', 'products')
+            ->innerJoin('products.students', 'students')
+            ->innerJoin('students.class', 'class')
+            ->where('class.id = ?1')
+            ->andWhere('payment.isMonthEnded = true')
+            ->andWhere('products.isMonthEnded = true')
+            ->andWhere( "DATE_FORMAT(products.forMonth, '%Y-%m') = ?2" )
+            ->setParameter(1, $classId)
+            ->setParameter(2, $date->format('Y-m'))
+            ->getQuery()
+            ->getResult();
+    }
+
     // /**
     //  * @return Payment[] Returns an array of Payment objects
     //  */

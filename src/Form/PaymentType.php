@@ -13,13 +13,15 @@ class PaymentType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('price',TextType::class,
-                array('disabled' =>'true')
-            )
+            ->add('price',TextType::class,array(
+                    'attr' => ['readonly' => true],
+                ))
             ->add('payment')
             ->add('namePayer')
-            ->add('seller', TextType::class,
-                array('disabled' =>'true')
+            ->add('seller', TextType::class,array(
+                //array('disabled' =>'true')
+                'attr' => ['readonly' => true],
+                )
             )
             //->add('datePurchases')
             //->add('lastEdit')

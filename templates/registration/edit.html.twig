@@ -16,52 +16,39 @@
                         }) }}
                     </div>
                 </div>
-                <div class="form-group center-block">
-                    <div class="col-sm-4 col-sm-offset-4">
-                         {{ form_row(registrationForm.username, {
-                             label: 'Потребителско име за вход.'
-                         }) }}
+                {% if app.getUser() and app.getUser().isAdmin() %}
+                    <div class="form-group center-block">
+                        <div class="col-sm-4 col-sm-offset-4">
+                            <label>Ниво на достъп:</label>
+                            <select name="role[name]">
+                                {% if  registrationForm.vars['value'].roles[0] == 'ROLE_ADMIN' %}
+                                    <option value="role_admin">Администратор</option>
+                                    <option value="role_user">Потребител</option>
+                                    <option value="role_teacher">Учител</option>
+                                    <option value="role_seller">Продавач</option>
+                                {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_TEACHER' %}
+                                    <option value="role_teacher">Учител</option>
+                                    <option value="role_user">Потребител</option>
+                                    <option value="role_admin">Администратор</option>
+                                    <option value="role_seller">Продавач</option>
+                                {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_SELLER' %}
+                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_user">Потребител</option>
+                                    <option value="role_admin">Администратор</option>
+                                    <option value="role_teacher">Учител</option>
+                                {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_USER' %}
+                                    <option value="role_user">Потребител</option>
+                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_admin">Администратор</option>
+                                    <option value="role_teacher">Учител</option>
+                                {% endif %}
+                            </select>
+                        </div>
                     </div>
-                </div>
-
-                <div class="form-group center-block">
-                    <div class="col-sm-4 col-sm-offset-4">
-                        <label>Ниво на достъп:</label>
-
-                        <select name="role[name]">
-                            {% if  registrationForm.vars['value'].roles[0] == 'ROLE_ADMIN' %}
-                                <option value="role_admin">Администратор</option>
-                                <option value="role_user">Потребител</option>
-                                <option value="role_seller">Продавач</option>
-                            {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_USER' %}
-                                <option value="role_user">Потребител</option>
-                                <option value="role_admin">Администратор</option>
-                                <option value="role_seller">Продавач</option>
-                            {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_SELLER' %}
-                                <option value="role_seller">Продавач</option>
-                                <option value="role_user">Потребител</option>
-                                <option value="role_admin">Администратор</option>
-                            {% endif %}
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group center-block">
-                    <div class="col-sm-4 col-sm-offset-4">
-                        {{ form_row(registrationForm.password.first, {
-                            label: 'Парола'
-                        }) }}
-                    </div>
-                </div>
-                <div class="form-group center-block">
-                    <div class="col-sm-4 col-sm-offset-4">
-                        {{ form_row(registrationForm.password.second, {
-                            label: 'Повторете паролата'
-                        }) }}
-                    </div>
-                </div>
+                {% endif %}
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-4">
-                        <a class="btn btn-default" href="{{ path('home') }}">Изход</a>
+                        <a class="btn btn-default" href="{{ path('user_all') }}">Изход</a>
                         <button type="submit" class="btn btn-primary">ЗАПАЗИ</button>
                     </div>
                 </div>

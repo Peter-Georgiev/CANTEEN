@@ -1,5 +1,5 @@
 import {table} from './applyDataTable.js'
-import {editButton, deleteButton, rowTextDangerOnOff} from './button-row-table.js';
+import {editButton, deleteButton, rowTextDangerOnOff,printPdfButton} from './button-row-table.js';
 import {bg} from './languageDataTable.js';
 const path = '/payment';
 
@@ -11,19 +11,19 @@ $(document).ready(function () {
         async:      true,
         success: function(data, status) {
             table.dataTable({
-                data: data,
+                data: data['payments'],
                 rowId: 'id',
                 //pagingType: 'full_numbers', // "simple" option for 'Previous' and 'Next' buttons only
                 columns: [
                     {
-                        data: "student", // can be null or undefined
-                        defaultContent: `<i></i>`,
-                        title: 'Име на ученик'
-                    }, {
                         data: "class", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Клас'
                     }, {
+                        data: "student", // can be null or undefined
+                        defaultContent: `<i></i>`,
+                        title: 'Име на ученик'
+                    },{
                         data: "teacher", // can be null or undefined
                         defaultContent: `<i></i>`,
                         title: 'Курсов ръководител'
@@ -64,16 +64,26 @@ $(document).ready(function () {
                         defaultContent: `<i></i>`,
                         title: 'Име на платеца'
                     }, {
+                        title: 'Печат'
+                    }, {
                         title: 'Плащане'
                     }, {
                         title: 'Редактиране'
                     },
                 ],
                 columnDefs: [{
+                    targets: -3,
+                    data: function (row, type, val, meta) {
+
+                        return "<button id='printBtn' class='btn-warning'>Принтиране</button>";
+                    },
+                }, {
                     targets: -2,
                     data: function (row, type, val, meta) {
                         //console.log(row.userRole);
-                        if (row.isPaid) {
+                        if (row.isMontEnded) {
+                            return "<button id='editBtn' class='btn-default' disabled>Затворено</button>";
+                        } else if (row.isPaid) {
                             return "<button id='editBtn' class='btn-danger'>Редактиране!</button>";
                         }
                         return "<button id='editBtn' class='btn-warning'>Редактиране!</button>";
@@ -88,7 +98,7 @@ $(document).ready(function () {
                     },
                 }],
                 order: [
-                    [1, 'asc'], [0, 'asc'], [6, 'des']
+                    [0, 'asc'], [1, 'asc'],[4, 'des'], [6, 'des']
                 ],
                 language: bg.language,
                 dom: 'lfBSrtip',
@@ -115,10 +125,6 @@ $(document).ready(function () {
                     $(".table-responsive").show();
                     rowTextDangerOnOff();
 
-                    table.on('click', 'tr', function () {
-                        window.location.href = `${path}/pdf/${this.getAttribute('id')}`;
-                    });
-
                     table.on('click', 'button', function () {
                         let rowTable = $(this).parent().parent();
                         rowTable.addClass("text-danger");
@@ -141,6 +147,8 @@ $(document).ready(function () {
                             deleteButton(`${path}/delete/${id}`, rowTable, message);
                         } else if (this.id === 'editBtn') {
                             editButton(`${path}/edit/${id}`);
+                        } else if (this.id === 'printBtn') {
+                            printPdfButton(`${path}/pdf/${id}`);
                         }
                     });
                 }

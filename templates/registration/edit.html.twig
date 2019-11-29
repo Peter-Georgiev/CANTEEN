@@ -32,20 +32,20 @@
                                     <option value="role_admin">Администратор</option>
                                     <option value="role_user">Потребител</option>
                                     <option value="role_teacher">Учител</option>
-                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_seller">Касиер</option>
                                 {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_TEACHER' %}
                                     <option value="role_teacher">Учител</option>
                                     <option value="role_user">Потребител</option>
                                     <option value="role_admin">Администратор</option>
-                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_seller">Касиер</option>
                                 {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_SELLER' %}
-                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_seller">Касиер</option>
                                     <option value="role_user">Потребител</option>
                                     <option value="role_admin">Администратор</option>
                                     <option value="role_teacher">Учител</option>
                                 {% elseif registrationForm.vars['value'].roles[0] == 'ROLE_USER' %}
                                     <option value="role_user">Потребител</option>
-                                    <option value="role_seller">Продавач</option>
+                                    <option value="role_seller">Касиер</option>
                                     <option value="role_admin">Администратор</option>
                                     <option value="role_teacher">Учител</option>
                                 {% endif %}

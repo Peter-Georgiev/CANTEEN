@@ -12,7 +12,9 @@
     <div class="container body-content span=8 offset=2">
         <div class="well" id="paymentProduct">
             <fieldset>
-                <legend>Плащане на задължение</legend>
+                <legend>
+                    Месечна Такса за столово хранене <span>{{ payment.products.forMonth|date('m.Y') }}</span>
+                </legend>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -21,7 +23,7 @@
                             <th scope="col">Цена</th>
                             <th scope="col">Такса в дни</th>
                             <th scope="col">Такса за месец</th>
-                            <th scope="col">Платено от</th>
+                            <th scope="col">Вносител</th>
                             <th scope="col">Касиер</th>
                             <th scope="col">Статус</th>
                         </tr>

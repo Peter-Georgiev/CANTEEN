@@ -46,7 +46,7 @@ $(document).ready(function () {
                     }, {
                         data: "user", // can be null or undefined
                         defaultContent: `<i></i>`,
-                        title: 'Име на касиер'
+                        title: 'Касиер'
                     }, {
                         data: function (row, type, val, meta) {
                             let lastEdit = row.lastEdit;
@@ -62,7 +62,7 @@ $(document).ready(function () {
                     }, {
                         data: 'namePayer', // can be null or undefined
                         defaultContent: `<i></i>`,
-                        title: 'Име на платеца'
+                        title: 'Вносител'
                     }, {
                         title: 'Печат'
                     }, {

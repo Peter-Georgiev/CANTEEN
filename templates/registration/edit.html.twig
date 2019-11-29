@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}User edit{% endblock %}
 
 
 {% block main %}
 <div class="container body-content span=8 offset=2">
-    <div class="well">
+    <div class="well" id="user_edit" hidden>
         {{  form_start(registrationForm) }}
             <fieldset>
                 <legend>Редактиране</legend>
@@ -55,16 +55,24 @@
                 {% endif %}
                 <div class="form-group center-block">
                     <div class="col-sm-4 col-sm-offset-4">
-                        {{ form_row(registrationForm.password.first, {
-                            label: 'Парола'
-                        }) }}
+                        <label class="control-label" for="class_id">Промяна на парола</label>
+                        <input type="checkbox" id="pass_edit" name="pass[edit]" value="1">
                     </div>
                 </div>
-                <div class="form-group center-block">
-                    <div class="col-sm-4 col-sm-offset-4">
-                        {{ form_row(registrationForm.password.second, {
-                            label: 'Повторете паролата'
-                        }) }}
+                <div id="pass_new">
+                    <div class="form-group center-block">
+                        <div class="col-sm-4 col-sm-offset-4">
+                            {{ form_row(registrationForm.password.first, {
+                                label: 'Нова парола'
+                            }) }}
+                        </div>
+                    </div>
+                    <div class="form-group center-block">
+                        <div class="col-sm-4 col-sm-offset-4">
+                            {{ form_row(registrationForm.password.second, {
+                                label: 'Повторди новата парола'
+                            }) }}
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -77,4 +85,20 @@
         {{  form_end(registrationForm) }}
     </div>
 </div>
+
+    <div class="container body-content span=8 offset=2">
+        <div id="notifications-table">
+            <div id="loadingBox" class="notification">
+                <span>Зареждане на данните …</span>
+            </div>
+            <div id="errorBox" class="notification">
+                <span>Грешка в данните!</span>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+{% block jsCustomPage %}
+    {{ encore_entry_script_tags('pageUserEdit') }}
+{% endblock %}
+

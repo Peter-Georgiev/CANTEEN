@@ -23,6 +23,11 @@ class RegistrationController extends AbstractController
     /**
      * @Route("/register", name="app_register")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $passwordEncoder
+     * @param GuardAuthenticatorHandler $guardHandler
+     * @param LoginFormAuthenticator $authenticator
+     * @return Response
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder,
                              GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response
@@ -37,16 +42,11 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $roles = strtoupper(trim($request->get('role')['name']));
-            if ($roles === 'ROLE_ADMIN') {
-                $user->setRoles(['ROLE_ADMIN']);
-            } elseif ($roles === 'ROLE_SELLER') {
-                $user->setRoles(['ROLE_SELLER']);
-            } elseif ($roles === 'ROLE_TEACHER') {
-                $user->setRoles(['ROLE_TEACHER']);
-            } else {
-                $user->setRoles(['ROLE_USER']);
+            $role = strtoupper(trim($request->get('role')['name']));
+            if (array_key_exists($role, $this->roles())) {
+                $user->setRoles([$role]);
             }
+
             // encode the plain password
             $user->setPassword(
                 $passwordEncoder->encodePassword(
@@ -83,17 +83,10 @@ class RegistrationController extends AbstractController
      * @param int $id
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param GuardAuthenticatorHandler $guardHandler
-     * @param LoginFormAuthenticator $authenticator
      * @return Response
      */
-    public function editAction(int $id, Request $request, UserPasswordEncoderInterface $passwordEncoder,
-                               GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response
+    public function editAction(int $id, Request $request, UserPasswordEncoderInterface $passwordEncoder): Response
     {
-        if (!$this->getUser()->isAdmin()) {
-            return $this->redirectToRoute('home');
-        }
-
         $currentUser = $this->getUser();
         $user = $this->getDoctrine()->getRepository(User::class)->find($id);
         if (!$user) {
@@ -104,6 +97,99 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('user_all');
         }
 
+        $token = $request->get('pass');
+        $isEditPass = false;
+        if ($token !== null && array_key_exists('edit', $token)) {
+            if (intval($token['edit']) === 1) {
+                $isEditPass = true;
+            }
+        }
+
+        $form = $this->editPass($request, $user, $isEditPass);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($this->getUser()->isAdmin()) {
+                $role = strtoupper(trim($request->get('role')['name']));
+                if (array_key_exists($role, $this->roles())) {
+                    $user->setRoles([$role]);
+                }
+            }
+
+            if ($isEditPass) {
+                $user->setPassword(
+                    $passwordEncoder->encodePassword(
+                        $user,
+                        $form->get('password')->getData()
+                    )
+                );
+            }
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('user_all');
+        }
+        return $this->render('registration/edit.html.twig', ['registrationForm' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/user/all", name="user_all")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function allView()
+    {
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
+
+        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+        if (!$users) {
+            return $this->redirectToRoute('home');
+        }
+
+        return $this->render('registration/all.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
+    public function roles()
+    {
+        return [
+            'ROLE_USER' => 'Потребител',
+            'ROLE_ADMIN' => 'Администратор',
+            'ROLE_SELLER' => 'Касиер',
+            'ROLE_TEACHER' => 'Учител'
+        ];
+    }
+
+    private function editPass($request, $user, $isEditPass)
+    {
+        $form = $this->formWithPass($request, $user);
+
+        if ($form->isSubmitted() && !$isEditPass) {
+            return $this->formWithoutPass($request, $user);
+        }
+
+        return $form;
+    }
+
+    private function formWithoutPass($request, $user)
+    {
+        $form = $this->createFormBuilder($user)
+            ->add('username', TextType::class, array(
+                'attr' => ['readonly' => true],
+            ))
+            ->add('fullName', TextType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+        return $form;
+    }
+
+    private function formWithPass($request, $user)
+    {
         $form = $this->createFormBuilder($user)
             ->add('username', TextType::class, array(
                 'attr' => ['readonly' => true],
@@ -113,7 +199,7 @@ class RegistrationController extends AbstractController
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
                 'type' => PasswordType::class,
-                'options' => ['attr' => ['class' => 'password-field']],
+                'options' => ['attr' => ['class' => 'password-field', 'disabled' => false]],
                 'required' => true,
                 'first_options'  => ['label' => 'Парола'],
                 'second_options' => ['label' => 'Повтори паролата'],
@@ -133,54 +219,7 @@ class RegistrationController extends AbstractController
             ])
             ->getForm();
 
-
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $roles = strtoupper(trim($request->get('role')['name']));
-            if ($roles === 'ROLE_ADMIN') {
-                $user->setRoles(['ROLE_ADMIN']);
-            } elseif ($roles === 'ROLE_SELLER') {
-                $user->setRoles(['ROLE_SELLER']);
-            } elseif ($roles === 'ROLE_TEACHER') {
-                $user->setRoles(['ROLE_TEACHER']);
-            } else {
-                $user->setRoles(['ROLE_USER']);
-            }
-
-            $user->setPassword(
-                $passwordEncoder->encodePassword(
-                    $user,
-                    $form->get('password')->getData()
-                )
-            );
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('user_all');
-        }
-        return $this->render('registration/edit.html.twig', ['registrationForm' => $form->createView()]);
-    }
-
-    /**
-     * @Route("/user/all", name="user_all")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
-     */
-    public function allAction()
-    {
-        if (!$this->getUser()->isAdmin()) {
-            return $this->redirectToRoute('home');
-        }
-
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
-        if (!$users) {
-            return $this->redirectToRoute('home');
-        }
-
-        return $this->render('registration/all.html.twig', [
-            'users' => $users,
-        ]);
+        return $form;
     }
 }

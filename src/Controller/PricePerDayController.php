@@ -44,6 +44,10 @@ class PricePerDayController extends AbstractController
      */
     public function createAction(Request $request)
     {
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
+
         try {
             $pricePerDay = new PricePerDay();
             $form = $this->createForm(PricePerDayType::class, $pricePerDay);
@@ -90,6 +94,10 @@ class PricePerDayController extends AbstractController
      */
     public function editAction(Request $request, $id)
     {
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
+
         $pricePerDay = $this->getDoctrine()->getRepository(PricePerDay::class)->find($id);
         if (!$pricePerDay) {
             return $this->redirectToRoute('price_per_day');
@@ -122,10 +130,13 @@ class PricePerDayController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @throws \Exception
      */
-    public function daleteAction($id)
+    public function deleteAction($id)
     {
-        $pricePerDay = $this->getDoctrine()->getRepository(PricePerDay::class)->find($id);
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
 
+        $pricePerDay = $this->getDoctrine()->getRepository(PricePerDay::class)->find($id);
         if (!$pricePerDay) {
             return $this->redirectToRoute('price_per_day');
         }

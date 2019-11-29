@@ -35,12 +35,9 @@
                     </div>
                     {% if app.getUser() and app.getUser().isAdmin() %}
                         <div class="form-group">
-                            <div class="col-sm-8 col-sm-offset-3">
+                            <div class="col-sm-3 col-sm-offset-5">
                                 <a class="btn btn-warning" href="{{ path('user_edit', {id: user.id}) }}">
-                                    Профил - име презиме фамилия/достъп
-                                </a>
-                                <a class="btn btn-danger" href="{{ path('user_edit_pass', {id: user.id}) }}">
-                                    Профил - потребителско име/парола
+                                    Профил
                                 </a>
                             </div>
                         </div>

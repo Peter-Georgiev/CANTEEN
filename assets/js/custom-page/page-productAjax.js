@@ -1,7 +1,6 @@
 import {table} from './applyDataTable.js'
 import {editButton, deleteButton, addOnButton, rowTextDangerOnOff} from './button-row-table.js';
 import {bg} from './languageDataTable.js';
-const currentPathname = window.location.pathname;
 const path = '/product';
 
 $(document).ready(function () {
@@ -11,7 +10,6 @@ $(document).ready(function () {
         dataType:   'json',
         async:      true,
         success: function(data, status) {
-            console.log(data)
             table.dataTable({
                 data: data['products'],
                 rowId: 'id',
@@ -70,23 +68,13 @@ $(document).ready(function () {
                             return `<i></i>`;
                         },
                         title: 'Редакция'
-                    }, /*{
-                        title: 'Плащане'
-                    }, */{
+                    }, {
                         title: 'Редактиране'
                     }, {
                         title: 'Изтриване'
                     },
                 ],
-                columnDefs: [/*{
-                    targets: -3,
-                    data: function (row, type, val, meta) {
-                        if (row.isPaid) {
-                            return "<button id='paidBtn' class='btn-info' disabled>Платено!</button>";
-                        }
-                        return  "<button id='paidBtn' class='btn-success'>Плащане!</button>";
-                    },
-                }, */{
+                columnDefs: [{
                     targets: -2,
                     data: function (row, type, val, meta) {
                         if (row.isPaid) {
@@ -104,7 +92,7 @@ $(document).ready(function () {
                     },
                 }],
                 order: [
-                    [0, 'asc'], [1, 'asc'], [3, 'des']
+                    [5, 'des'], [0, 'asc'], [1, 'asc']
                 ],
                 language: bg.language,
                 dom: 'lfBSrtip',
@@ -130,8 +118,6 @@ $(document).ready(function () {
                     $('#loadingBox').hide();
                     $('.table-responsive').show();
                     rowTextDangerOnOff();
-                    productCreate(data);
-                    productEditId(data);
 
                     table.on('click', 'button', function () {
                         let rowTable = $(this).parent().parent();
@@ -171,91 +157,4 @@ $(document).ready(function () {
             $('#errorBox').show();
         },
     });
-
-    function productCreate(data) {
-        if (currentPathname === `${path}/create`) {
-            hiddenProductForMonthDay();
-            selectedOption(data);
-
-            $('#class #class_id').on('change', (event) => {
-                selectedOption(data, 0, Number(event.target.value));
-            });
-        }
-    }
-
-    function productEditId(data) {
-        hiddenProductForMonthDay();
-        let res = currentPathname.split('/');
-        let count = 0;
-        for(let i = 0; i < res.length; i++) {
-            if (res[i] === 'product' || res[i] === 'edit') {
-                count++;
-            }
-        }
-        if (count !== 2) {
-            return false;
-        }
-
-        let id =  Number(res[res.length - 1]);
-        $('#dataTable tbody #' + id).addClass("text-danger");
-
-        selectedOption(data, id);
-        $('#class #class_id').on('change',(event) => {
-            selectedOption(data, 0, Number(event.target.value));
-        });
-    }
-
-    function selectedOption(data, id = 0, classId = 0) {
-        let i = 0;
-        let tempFirstOption = '';
-        let outputClass = [];
-        let outputStudent = [];
-
-        $.each(data['products'], function (key, value) {
-            if (id === Number(value.id)) {
-                classId = value.classId;
-                return false;
-            }
-        });
-
-        $.each(data['classes'], function(key, value) {
-            if (classId > 0 && i === 0) {
-                outputClass.push('');
-            }
-
-            if (value.id !== classId) {
-                outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
-            } else {
-                tempFirstOption = '<option value="' + value.id + '">' + value.name + '</option>';
-            }
-
-            if (classId > 0) {
-                if (value.id === classId) {
-                    $.each(value.students, function (key, value) {
-                        outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                    });
-                }
-            } else {
-                $.each(value.students, function (key, value) {
-                    outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                });
-            }
-            i++;
-        });
-
-        if (classId > 0) {
-            outputClass[0] = tempFirstOption;
-        }
-
-        $('#class #class_id').html(outputClass.join(''));
-        $('#student #student_id').html(outputStudent.join(''));
-    }
-
-    function hiddenProductForMonthDay() {
-        let productForMonthDay = $('#product_forMonth_day');
-        if (productForMonthDay) {
-            productForMonthDay.hide();
-        }
-    }
 });
-export {path};

@@ -51,7 +51,7 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a href="{{ path('payment_by_class') }}">
+                                            <a href="{{ path('payment_view_end_months') }}">
                                                 Приключване на предходен месец
                                             </a>
                                         </li>
@@ -130,24 +130,19 @@
                                        href="#">{{ app.getUser().getUsername() }}
                                         <span class="caret"></span></a>
                                     <ul class="dropdown-menu">
-                                        <li class="text-center">
-                                            <a href="{{ path('user_edit', {id: app.getUser().getId() }) }}">
-                                                Профил - име презиме фамилия/достъп
-                                            </a>
-                                        </li>
-                                        <li class="text-center">
-                                            <a href="{{ path('user_edit_pass', {id: app.getUser().getId() }) }}">
-                                                Профил - потребителско име/парола
-                                            </a>
-                                        </li>
                                         {% if app.getUser() and app.getUser().isAdmin() %}
                                             <li class="text-center">
                                                 <a href="{{ path('app_register') }}">Регистриране на нов потребител</a>
                                             </li>
+                                            <li class="text-center">
+                                                <a href="{{ path('user_all') }}" class="text-center">
+                                                    Всички профили
+                                                </a>
+                                            </li>
                                         {% endif %}
                                         <li class="text-center">
-                                            <a href="{{ path('user_all') }}" class="text-center">
-                                                Всички профили
+                                            <a href="{{ path('user_edit', {id: app.getUser().getId() }) }}">
+                                                Профил
                                             </a>
                                         </li>
                                         <li class="text-center">
@@ -210,6 +205,9 @@
 
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
+
+        <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
+
         <!-- PLUGIN DATA-TABLE JS -->
         <script src="{{ asset('/js/data-tables/DataTables-1.10.18/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('/js/data-tables/Responsive-2.2.2/js/dataTables.responsive.min.js') }}"></script>
@@ -220,9 +218,6 @@
         <script src="{{ asset('/js/data-tables/JSZip-2.5.0/jszip.min.js') }}"></script>
         <script src="{{ asset('/js/data-tables/pdfmake-0.1.36/pdfmake.min.js') }}"></script>
         <script src="{{ asset('/js/data-tables/pdfmake-0.1.36/vfs_fonts.js') }}"></script>
-
-
-        <script src="{{ asset('/js/jquery-ui.min.js') }}"></script>
 
     {% endblock %}
 

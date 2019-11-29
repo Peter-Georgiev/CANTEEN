@@ -39,6 +39,7 @@ Encore
     .addEntry('pagePaymentEditAjax', './assets/js/custom-page/page-paymentEditAjax.js')
     .addEntry('pageEndedMonth', './assets/js/custom-page/page-endedMonth.js')
     .addEntry('pageEndedMonthInfo', './assets/js/custom-page/page-endedMonthInfo.js')
+    .addEntry('pageByMonthClass', './assets/js/custom-page/page-byMonthClass.js')
     //.addEntry('applyDataTable', './assets/js/custom-page/applyDataTable.js')
     //.addEntry('buttonRowTable', './assets/js/custom-page/button-row-table.js')
     //.addEntry('languageDataTable', './assets/js/custom-page/languageDataTable.js')

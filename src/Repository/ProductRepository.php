@@ -49,19 +49,32 @@ class ProductRepository extends ServiceEntityRepository
 
     public function findByExistingProduct(Product $product)
     {
-        return $this->createQueryBuilder('p')
-            ->innerJoin('p.students', 's')
-            ->innerJoin('s.class', 'c')
-            ->where( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
-            ->andWhere('s.id = ?2')
-            ->andWhere('c.id = ?3')
-            ->andWhere('p.id != ?4')
+        return $this->createQueryBuilder('product')
+            ->innerJoin('product.students', 'students')
+            ->innerJoin('students.class', 'class')
+            ->where( "DATE_FORMAT(product.forMonth, '%Y-%m') = ?1" )
+            ->andWhere('students.id = ?2')
+            ->andWhere('class.id = ?3')
+            ->andWhere('product.id != ?4')
             ->setParameter(1, $product->getForMonth()->format('Y-m'))
             ->setParameter(2, $product->getStudent()->getId())
             ->setParameter(3, $product->getStudent()->getClass()->getId())
             ->setParameter(4, intval($product->getId()))
             ->getQuery()
             ->getResult();
+    }
+
+    public function findByMonthAndPaid(\DateTime $date, $isPaid = false)
+    {
+        return $this->createQueryBuilder('product')
+        ->innerJoin('product.students', 'students')
+        ->innerJoin('students.class', 'class')
+        ->where('product.isPaid = ?1')
+        ->andWhere( "DATE_FORMAT(product.forMonth, '%Y-%m') = ?2" )
+        ->setParameter(1, $isPaid)
+        ->setParameter(2, $date->format('Y-m'))
+        ->getQuery()
+        ->getResult();
     }
 
     // /**

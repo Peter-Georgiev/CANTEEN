@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-json": "*",
+        "beberlei/doctrineextensions": "^1.2",
         "dompdf/dompdf": "^0.8.3",
         "knplabs/knp-paginator-bundle": "^4.0",
         "sensio/framework-extra-bundle": "^5.4",
@@ -30,7 +31,8 @@
         "symfony/validator": "4.3.*",
         "symfony/web-link": "4.3.*",
         "symfony/webpack-encore-bundle": "^1.7",
-        "symfony/yaml": "4.3.*"
+        "symfony/yaml": "4.3.*",
+      "ext-mysql": "*"
     },
     "require-dev": {
         "symfony/debug-pack": "^1.0",

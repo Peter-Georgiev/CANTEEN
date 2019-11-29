@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\ClassTable;
 use App\Entity\Payment;
 use App\Entity\Product;
-use App\Entity\Student;
 use App\Form\PaymentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 // Include Dompdf required namespaces
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use function Composer\Autoload\includeFile;
 
 class PaymentController extends AbstractController
 {
@@ -51,11 +51,35 @@ class PaymentController extends AbstractController
      */
     public function createAjax(Request $request)
     {
-        $classes = $this->getDoctrine()->getRepository(ClassTable::class)->findOnlyForPayment();
+        $date = new \DateTime('now');
+        $classes = $this->getDoctrine()->getRepository(ClassTable::class)
+            ->findPaymentByMonth($date->modify('+1 month'));
+
+        $result = array();
+        $i = 0;
+        foreach ($classes as $class) {
+            $result[$i] = array(
+                'id' => $class['id'],
+                'name' => $class['name'],
+                'seller' => $this->getUser()->getFullName(),
+                'students' => array(),
+            );
+
+            $tokens = array_map('trim',explode("||", $class['students']));
+            foreach ($tokens as $token) {
+                $obj = array();
+                $t = array_map('trim', explode(',', $token));
+                foreach ($t as $a) {
+                    list($k, $v) = explode('=>', $a);
+                    $obj[$k] = $v;
+                }
+                $result[$i]['students'][] = $obj;
+            }
+            $i++;
+        }
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {
-            $jsonData = $this->jsonData(null, null, $classes);
-            return new JsonResponse($jsonData);
+            return new JsonResponse(['classes' => $result]);
         } else {
             return $this->render('payment/create.html.twig');
         }
@@ -69,6 +93,7 @@ class PaymentController extends AbstractController
      */
     public function createAction(Request $request)
     {
+
         if (!($this->getUser()->isAdmin() || $this->getUser()->isSeller())) {
             return $this->redirectToRoute('home');
         }
@@ -83,16 +108,21 @@ class PaymentController extends AbstractController
                 $payment->setLastEditUser($this->getUser()->getFullName());
                 $product = $this->getDoctrine()->getRepository(Product::class)
                     ->find($request->get('product')['id']);
-                if ($product) {
-                    $product->setIsPaid(true);
-                    $payment->setProducts($product);
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($product);
-                    $em->persist($payment);
-                    $em->flush();
-                    return $this->render('payment/view.html.twig', ['payment' => $payment]);
+
+                if (!$product) {
+                    throw new \Exception('Задължението не е намерено!');
                 }
+
+                $product->setIsPaid(true);
+                $payment->setProducts($product);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($product);
+                $em->persist($payment);
+                $em->flush();
+
+                return $this->render('payment/view.html.twig', ['payment' => $payment]);
             }
+
             return $this->render('payment/create.html.twig', ['form' => $form->createView()]);
         } catch (\Exception $e) {
             return $this->render('payment/index.html.twig', ['danger' => $e->getMessage()]);
@@ -215,72 +245,70 @@ class PaymentController extends AbstractController
     }
 
     /**
-     *  @Route("/payment/classes", name="payment_by_class")
+     *  @Route("/payment/view-end-months", name="payment_view_end_months")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param Request $request
      * @return Response
      * @throws \Exception
      */
-    public function viewAllClasses(Request $request)
+    public function viewEndMonths(Request $request)
     {
         if (!($this->getUser()->isAdmin() || $this->getUser()->isSeller())) {
             return $this->redirectToRoute('home');
         }
 
-        $date = (new \DateTime('now'))->modify('-1 month');
+        $date = new \DateTime('now');
+        $date->modify('-1 month');
         $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findByMonth($date);
-        $classId = intval($request->get('class')['id']);
-        if ($classId > 0) {
-            $payments = $this->getDoctrine()->getRepository(Payment::class)
-                ->findNotCompleteMonthByClassIdAndMonth($request->get('class')['id'], $date);
-            $class =  $this->getDoctrine()->getRepository(ClassTable::class)->find($classId);
+            ->findPaymentByMonth($date, true);
 
-            return $this->render('payment/byclass.html.twig', [ 'month' => $date,
-                'classes' => $classTables, 'payments' => $payments, 'class' => $class
-                ]);
-        }
         if (!$classTables) {
-            return $this->render('payment/byclass.html.twig', ['month' => $date,
+            return $this->render('payment/view-end-months.html.twig', ['month' => $date,
                 'classes' => [['id' => '0', 'name' => 'Няма за преключване!']]
             ]);
         }
-        return $this->render('payment/byclass.html.twig', ['month' => $date, 'classes' => $classTables]);
+        return $this->render('payment/view-end-months.html.twig', ['month' => $date, 'classes' => $classTables]);
     }
 
     /**
-     * @Route("/payment/ended-month/{id}", name="payment_ended_mont")
+     * @Route("/payment/end-month/{id}", name="payment_end_month")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param $id
      * @param Request $request
      * @return JsonResponse|Response
      */
-    public function endedMonthAction($id, Request $request)
+    public function endedByMonthAction($id, Request $request)
     {
         if (!($this->getUser()->isAdmin() || $this->getUser()->isSeller())) {
             return $this->redirectToRoute('home');
         }
-
         try {
-            $date = (new \DateTime('now'))->modify('-1 month');
-            $payments = $this->getDoctrine()->getRepository(Payment::class)
-                ->findNotCompleteMonthByClassIdAndMonth($id, $date);
-
-            if ($payments) {
-                $em = $this->getDoctrine()->getManager();
-                foreach ($payments as $payment) {
-                    /** @var Payment $payment */
-                    $payment->setIsMonthEnded(true);
-                    $payment->getProducts()->setIsMonthEnded(true);
-                    $em->persist($payment);
-                }
-                $em->flush();
-                return $this->render('payment/endmonth.html.twig', ['payments' => $payments]);
+            $date = new \DateTime();
+            $tokens = explode('.', $id);
+            if (count($tokens) !== 2) {
+                return $this->redirectToRoute('payment_ended_mont_info');
             }
-            return $this->redirectToRoute('payment_by_class');
+
+            $date->setDate($tokens[1], $tokens[0], '1');
+            $payments = $this->getDoctrine()->getRepository(Payment::class)
+                ->findBydMonth($date, true, false);
+            if (!$payments) {
+                return $this->redirectToRoute('payment_ended_mont_info');
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            foreach ($payments as $payment) {
+                /** @var Payment $payment */
+                $payment->setIsMonthEnded(true);
+                $payment->getProducts()->setIsMonthEnded(true);
+                $em->persist($payment);
+            }
+            $em->flush();
+
+            return $this->render('payment/ended-month-info.html.twig', ['payments' => $payments]);
 
         } catch (\Exception $e) {
-            return $this->render('payment/endmonth.html.twig', ['danger' => $e->getMessage()]);
+            return $this->render('payment/ended-month-info.html.twig', ['danger' => $e->getMessage()]);
         }
     }
 
@@ -294,70 +322,39 @@ class PaymentController extends AbstractController
     public function endedMonthInfo(Request $request)
     {
         $dateTime = new \DateTime('now');
-        $classId = intval($request->get('class')['id']);
+        $requestTokens = $request->get('class');
         $forMonth = $request->get('month');
         $token = array();
         if (strlen($forMonth) === 7) {
             $token = explode('.', $forMonth);
         }
 
-        if ($classId > 0 && count($token) === 2) {
-            $dateTime->setDate($token[1], $token[0], 1);
-
-            $payments = $this->getDoctrine()->getRepository(Payment::class)
-                ->findEndedMonthByClassIdAndDate($classId, $dateTime);
-
-            return $this->render('payment/endmonth.html.twig', ['dateTime' => $dateTime, 'payments' => $payments
+        if (count($token) !== 2) {
+            $classTable = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
+            return $this->render('payment/by-month-class.html.twig', [
+                'dateTime' => $dateTime, 'classes' => $classTable
             ]);
         }
 
-        $classTable = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
-        return $this->render('payment/endedMonthInfo.html.twig', [
-            'dateTime' => $dateTime, 'classes' => $classTable
-        ]);
-    }
+        $dateTime->setDate($token[1], $token[0], 1);
 
-
-
-    /**
-     * @Route("/payment/create/by/{id}", name="payment_create_id")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @param $id
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function createByIdAction($id, Request $request)
-    {
-        if (!($this->getUser()->isAdmin() || $this->getUser()->isSeller())) {
-            return $this->redirectToRoute('home');
+        if (array_key_exists('all', $requestTokens)) {
+            $payments = $this->getDoctrine()->getRepository(Payment::class)
+                ->findBydMonth($dateTime, true, true);
+            $classes = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
+            return $this->render('payment/ended-month-info.html.twig', [
+                'dateTime' => $dateTime, 'classes' => $classes,'payments' => $payments
+            ]);
         }
 
-        try {
-            $payment = new Payment();
-            $product = $this->getDoctrine()->getRepository(Product::class)->find($id);
-            $payment->setProducts($product);
-
-            $form = $this->createForm(PaymentType::class, $payment);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $payment->setSeller($this->getUser()->getFullName());
-                $payment->setLastEditUser($this->getUser()->getFullName());
-                $product = $this->getDoctrine()->getRepository(Product::class)
-                    ->find($request->get('product')['id']);
-                if ($product) {
-                    $product->setIsPaid(true);
-                    $payment->setProducts($product);
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($product);
-                    $em->persist($payment);
-                    $em->flush();
-                    return $this->render('payment/view.html.twig', ['payment' => $payment]);
-                }
-            }
-            return $this->render('payment/create.html.twig', ['form' => $form->createView()]);
-        } catch (\Exception $e) {
-            return $this->render('payment/index.html.twig', ['danger' => $e->getMessage()]);
+        if (array_key_exists('id', $requestTokens)) {
+            $classId = intval($requestTokens['id']);
+            $payments = $this->getDoctrine()->getRepository(Payment::class)
+                ->findEndedMonthByClassIdAndDate($classId, $dateTime);
+            $class = $this->getDoctrine()->getRepository(ClassTable::class)->find($classId);
+            return $this->render('payment/ended-month-info.html.twig', [
+                'dateTime' => $dateTime, 'class' => $class, 'payments' => $payments
+            ]);
         }
     }
 
@@ -383,7 +380,6 @@ class PaymentController extends AbstractController
         if ($payments !== null) {
             $arrPayment = $this->paymentToArray($payments);
         }
-
 
         return ['payments' => $arrPayment, 'classes' => $arrClasses, 'products' => $arrProducts];
     }
@@ -442,41 +438,30 @@ class PaymentController extends AbstractController
         return $arrClassesId;
     }
 
-    private function classTablesToArray($classTables)
+    private function classTablesToArray($classes)
     {
-        $arrClasses = array();
+        $result = array();
         $i = 0;
-
-        /** @var ClassTable $c */
-        foreach ($classTables as $c) {
-            $i++;
-            $arrClasses[$i] = array(
-                'id' => $c->getId(),
-                'name' => $c->getName(),
+        foreach ($classes as $class) {
+            $result[$i] = array(
+                'id' => $class['id'],
+                'name' => $class['name'],
+                'seller' => $this->getUser()->getFullName(),
                 'students' => array(),
             );
 
-            /** @var Student| $s */
-            foreach ($c->getStudents() as $s) {
-                foreach ($s->getProducts() as $p) {
-                   if ($p->getIsPaid() == true) {
-                       continue;
-                   }
-                    $arrClasses[$i]['students'][] = array(
-                        'productId' => $p->getId(),
-                        'studentId' => $s->getId(),
-                        'student' => $s->getFullName(),
-                        'userId' => $s->getUser()->getId(),
-                        'user' => $s->getUser()->getFullName(),
-                        'price' => $p->getPrice(),
-                        'feeInDays' => $p->getFeeInDays(),
-                        'forMonth' => $p->getForMonth()->format('m.Y'),
-                        'isPaid' => $p->getIsPaid(),
-                        'seller' => $this->getUser()->getFullName()
-                    );
+            $tokens = array_map('trim',explode("||", $class['students']));
+            foreach ($tokens as $token) {
+                $obj = array();
+                $t = array_map('trim', explode(',', $token));
+                foreach ($t as $a) {
+                    list($k, $v) = explode('=>', $a);
+                    $obj[$k] = $v;
                 }
+                $result[$i]['students'][] = $obj;
             }
+            $i++;
         }
-        return $arrClasses;
+        return $result;
     }
 }

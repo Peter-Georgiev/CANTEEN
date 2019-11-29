@@ -11,6 +11,14 @@
                 <legend>Редактиране</legend>
                 <div class="form-group center-block">
                     <div class="col-sm-4 col-sm-offset-4">
+                        {{ form_row(registrationForm.username, {
+                            label: 'Потребителско име за вход',
+                            disabled: 'disabled'
+                        }) }}
+                    </div>
+                </div>
+                <div class="form-group center-block">
+                    <div class="col-sm-4 col-sm-offset-4">
                         {{ form_row(registrationForm.fullName, {
                             label: 'Име презиме фамилия'
                         }) }}
@@ -46,10 +54,24 @@
                         </div>
                     </div>
                 {% endif %}
+                <div class="form-group center-block">
+                    <div class="col-sm-4 col-sm-offset-4">
+                        {{ form_row(registrationForm.password.first, {
+                            label: 'Парола'
+                        }) }}
+                    </div>
+                </div>
+                <div class="form-group center-block">
+                    <div class="col-sm-4 col-sm-offset-4">
+                        {{ form_row(registrationForm.password.second, {
+                            label: 'Повторете паролата'
+                        }) }}
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-4">
-                        <a class="btn btn-default" href="{{ path('user_all') }}">Изход</a>
-                        <button type="submit" class="btn btn-primary">ЗАПАЗИ</button>
+                        <a class="btn btn-default" href="{{ path('home') }}">Изход</a>
+                        <button type="submit" class="btn btn-primary">Запази</button>
                     </div>
                 </div>
             </fieldset>

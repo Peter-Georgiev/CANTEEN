@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\ClassTable;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -53,33 +52,42 @@ class ClassTableRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findOnlyForPayment()
+    public function findPaymentByMonth(\DateTime $date, $isPaid = false, $isMonthEnded = false)
     {
-        return $this->createQueryBuilder('c')
-            ->innerJoin('c.students', 's')
-            ->innerJoin('s.products', 'p')
-            ->where('p.isPaid = false' )
-            ->andWhere('p.isMonthEnded = false' )
-            ->andWhere( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
-            ->setParameter(1, (new \DateTime('now'))
-                ->modify('+1 month')->format('Y-m')
-            )
-            ->orderBy('c.name', 'ASC')
-            ->addOrderBy('s.fullName', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $sql = "SELECT c.id AS `id`, c.name AS `name`,           
+            CONCAT(
+            GROUP_CONCAT( 'productId=>', p.id, ', studentId=>', s.id, ', student=>', s.full_name,', " .
+            "price=>', p.price, ', isPaid=>', p.is_paid,', forMonth=>', DATE_FORMAT(p.for_month, '%m.%Y'), ', " .
+            "feeInDays=>', p.fee_in_days,', dateCreate=>', DATE_FORMAT(p.date_create, '%d.%m.%Y %H:%i:%s'), ', " .
+            "lasDate=>',  DATE_FORMAT(p.last_edit, '%d.%m.%Y %H:%i:%s') SEPARATOR '||')
+            ) AS students
+            FROM class_table AS c 
+            INNER JOIN student AS s ON s.class_id = c.id 
+            INNER JOIN product AS p ON p.students_id = s.id
+            WHERE p.is_paid = :isPaid
+            AND p.is_month_ended = :isMonthEnded
+            AND DATE_FORMAT(p.for_month, '%m.%Y') = :month                
+            GROUP BY id";
+        $conn = $this->getEntityManager()->getConnection();
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue('isPaid', $isPaid);
+        $stmt->bindValue('isMonthEnded', $isMonthEnded);
+        $stmt->bindValue('month', $date->format('m.Y'));
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 
-    public function findByMonth(\DateTime $date)
+    public function findByMonth(\DateTime $date, $isPaid = true, $isMonthEnded = false)
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.students', 's')
             ->innerJoin('s.products', 'p')
-            ->where('p.isPaid = true' )
-            ->andWhere('p.isMonthEnded = false' )
-            ->andWhere( "DATE_FORMAT(p.forMonth, '%Y-%m') = ?1" )
-            ->setParameter(1, $date->format('Y-m')
-            )
+            ->where('p.isPaid = ?1' )
+            ->andWhere('p.isMonthEnded = ?2' )
+            ->andWhere( "DATE_FORMAT(p.forMonth, '%m.%Y') = ?3" )
+            ->setParameter(1, $isPaid)
+            ->setParameter(2, $isMonthEnded)
+            ->setParameter(3, $date->format('m.Y'))
             ->orderBy('c.name', 'ASC')
             //->addOrderBy('s.fullName', 'ASC')
             ->getQuery()

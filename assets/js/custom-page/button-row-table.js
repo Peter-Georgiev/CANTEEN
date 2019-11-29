@@ -54,37 +54,6 @@ function deleteButton(pathname, rowTable, messages) {
     confirmDialog(msg)
         .then(() =>  href(pathname) )
         .catch(err => escape());
-/*
-    let promise = new Promise(function(resolve, reject) {
-        rowTextDangerOnOff(false);
-
-        let add = $('div #add');
-        let edit = $('div #edit');
-        let addOnBtn = $('#addOnBtn');
-
-        if (add.css('display') !== 'none') {
-            add.hide();
-            addOnBtn.show();
-        }
-
-        if (edit.css('display') !== 'none') {
-            edit.hide();
-            addOnBtn.show();
-        }
-
-        setTimeout(function() { resolve([
-
-            ]);
-        }, 30);
-    });
-
-    promise.then(function(value) {
-        if (confirm(`!!! ВНИМАНИЕ !!!\n` + messages + ' patch:' + pathname)) {
-            window.location.href = pathname;
-        }
-        return false;
-    })
- */
 }
 
 function editButton(pathname) {

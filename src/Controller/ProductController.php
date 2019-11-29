@@ -101,21 +101,23 @@ class ProductController extends AbstractController
                 $student = $this->getDoctrine()->getRepository(Student::class)
                     ->find($request->get('student')['id']);
 
-                if ($student) {
-                    $product->setStudent($student);
-
-                    if ($this->findExistingProduct($product)) {
-                        throw new \Exception('Ученика от ' . $product->getStudent()->getClass()->getName() .
-                            ' клас ' . $product->getStudent()->getFullName() . ' вече е добавен' . ' за месец ' .
-                            $product->getForMonth()->format('m.Y')
-                        );
-                    }
-
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($product);
-                    $em->flush();
-                    return $this->render('product/view.html.twig', ['product' => $product]);
+                if (!$student) {
+                    throw new \Exception('Ученика не беше намерен!');
                 }
+
+                $product->setStudent($student);
+
+                if ($this->findExistingProduct($product)) {
+                    throw new \Exception('Ученика от ' . $product->getStudent()->getClass()->getName() .
+                        ' клас ' . $product->getStudent()->getFullName() . ' вече е добавен' . ' за месец ' .
+                        $product->getForMonth()->format('m.Y')
+                    );
+                }
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($product);
+                $em->flush();
+                return $this->render('product/view.html.twig', ['product' => $product]);
             }
 
             return $this->render('product/create.html.twig', ['form' => $form->createView()]);
@@ -148,25 +150,26 @@ class ProductController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $product->setLastEdit(new \DateTime('now'));
                 $student = $this->getDoctrine()->getRepository(Student::class)
                     ->find($request->get('student')['id']);
-                $product->setLastEdit(new \DateTime('now'));
 
-                if ($student) {
-                    $product->setStudent($student);
-
-                    if ($this->findExistingProduct($product)) {
-                        throw new \Exception('Ученика от ' . $product->getStudent()->getClass()->getName() .
-                            ' клас ' . $product->getStudent()->getFullName() . ' вече е добавен' . ' за месец ' .
-                            $product->getForMonth()->format('m.Y')
-                        );
-                    }
-
-                    $em = $this->getDoctrine()->getManager();
-                    $em->persist($product);
-                    $em->flush();
-                    return $this->render('product/view.html.twig', ['product' => $product]);
+                if (!$student) {
+                    throw new \Exception('Ученика не беше намерен!');
                 }
+                $product->setStudent($student);
+
+                if ($this->findExistingProduct($product)) {
+                    throw new \Exception('Ученика от ' . $product->getStudent()->getClass()->getName() .
+                        ' клас ' . $product->getStudent()->getFullName() . ' вече е добавен' . ' за месец ' .
+                        $product->getForMonth()->format('m.Y')
+                    );
+                }
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($product);
+                $em->flush();
+                return $this->render('product/view.html.twig', ['product' => $product]);
             }
 
             return $this->render('product/edit.html.twig', ['form' => $form->createView(),
@@ -192,7 +195,7 @@ class ProductController extends AbstractController
 
         $product = $this->getDoctrine()->getRepository(Product::class)->find($id);
         if (!$product) {
-            return $this->redirectToRoute('product');
+            return $this->redirectToRoute('app_product_index');
         }
 
         try {

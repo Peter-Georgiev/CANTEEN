@@ -105,6 +105,7 @@ class PricePerDayController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $em->persist($pricePerDay);
             $em->flush();
+
             return $this->redirectToRoute('price_per_day');
         }
 
@@ -124,28 +125,29 @@ class PricePerDayController extends AbstractController
     public function daleteAction($id)
     {
         $pricePerDay = $this->getDoctrine()->getRepository(PricePerDay::class)->find($id);
-        $pricesPerDays = $this->getDoctrine()->getRepository(PricePerDay::class)->findAll();
+
         if (!$pricePerDay) {
             return $this->redirectToRoute('price_per_day');
         }
 
-        if ($pricePerDay->getIsActive()) {
-            return $this->redirectToRoute('price_per_day');
-        }
-
         try {
-            $em = $this->getDoctrine()->getManager();
-            $num = count($pricesPerDays);
-            if ($num > 1) {
-                $activePricePerDey = $pricesPerDays[$num - 2];
-                $activePricePerDey->setIsActive(true);
-                $em->persist($activePricePerDey);
+            $pricesPerDays = $this->getDoctrine()->getRepository(PricePerDay::class)->findAll();
+            $length = count($pricesPerDays) - 1;
+
+            if ($length === 0) {
+                throw new \Exception();
             }
+
+            $activePricePerDey = $pricesPerDays[$length - 1];
+            $activePricePerDey->setIsActive(true);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($activePricePerDey);
             $em->remove($pricePerDay);
             $em->flush();
+
         } catch (\Exception $e) {
-            throw new \Exception('Hе може да бъде изтрито.'
-            );
+            throw new \Exception('Hе може да бъде изтрито.');
         }
         return $this->redirectToRoute('price_per_day');
     }

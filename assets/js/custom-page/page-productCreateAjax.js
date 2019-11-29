@@ -23,68 +23,69 @@ $(document).ready(function () {
 
     function productCreate(data) {
         if (currentPathname === `${path}/create`) {
-            hiddenProductForMonthDay();
-            selectedOption(data);
+            selectedClassStudent(data);
             calculatePriceForDay(data);
 
             product.find('#class_id').on('change', (event) => {
-                selectedOption(data, 0, Number(event.target.value));
+                selectedClassStudent(data, 0, event.target.value);
             });
         }
     }
 
-    function selectedOption(data, studentId = 0, classId = 0) {
-        let isFirstElement = false;
-        let tempFirstOption = '';
+    function selectedClassStudent(data, studentId = 0, classId = 0) {
         let outputClass = [];
         let outputStudent = [];
 
-        $.each(data['classes'], function(key, value) {
-            if (classId > 0 && isFirstElement === false) {
-                outputClass.push('');
-            }
-
-            if (value.id !== classId) {
-                outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
-            } else {
-                tempFirstOption = '<option value="' + value.id + '">' + value.name + '</option>';
-            }
-
-            if (classId > 0 && studentId > 0) {
-                if (value.id === classId) {
-                    $.each(value.students, function (key, value) {
-                        if (value.studentId === studentId) {
-                            outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                        }
-                    });
-                }
-            } else if (classId > 0) {
-                if (value.id === classId) {
-                    $.each(value.students, function (key, value) {
-                        outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                    });
-                }
-            } else if (isFirstElement === false) {
-                $.each(value.students, function (key, value) {
-                    outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                });
-            }
-            isFirstElement = true;
-        });
-
         if (classId > 0) {
-            outputClass[0] = tempFirstOption;
+            $.each(data['classes'], function (key, value) {
+                if (value.id == classId) {
+                    outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
+                    selectStudents(key, value, studentId);
+                }
+            });
+            $.each(data['classes'], function (key, value) {
+                if (value.id != classId) {
+                    outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
+                }
+            });
+        } else if (classId == 0) {
+            let tempClsId = [];
+            $.each(data['classes'], function (key, value) {
+                outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
+                tempClsId.push(value.id);
+                if (value.id == tempClsId[0]) {
+                    selectStudents(key, value, studentId);
+                }
+            });
         }
 
-        product.find('#class_id').html(outputClass.join(''));
-        product.find('#student_id').html(outputStudent.join(''));
-    }
+        function selectStudents(key, value, studentId) {
+            let tempStdId = [];
+            $.each(value.students, function (k, v) {
+                tempStdId.push(v.studentId);
+                if (studentId == 0) {
+                    studentId = tempStdId[0];
+                }
 
-    function hiddenProductForMonthDay() {
-        let productForMonthDay = product.find('#product_forMonth_day');
-        if (productForMonthDay) {
-            productForMonthDay.hide();
+                if (v.studentId == studentId) {
+                    outputStudent.push('<option value="' + v.studentId + '">' + v.student + '</option>');
+                }
+            });
+
+            $.each(value.students, function (k, v) {
+                if (v.studentId != studentId) {
+                    outputStudent.push('<option value="' + v.studentId + '">' + v.student + '</option>');
+                }
+            });
         }
+
+        if (outputClass.length > 0){
+            product.find('#class_id').html(outputClass.join(''));
+        }
+        if (outputStudent.length > 0){
+            product.find('#student_id').html(outputStudent.join(''));
+        }
+
     }
 
     function calculatePriceForDay(data) {
@@ -92,6 +93,7 @@ $(document).ready(function () {
             let day = Number(event.target.value);
             let price = Number(data['pricePerDays'][0]['price']);
             let result =(Math.round((price * day) * 100) / 100).toFixed(2);
+
             product.find('#product_price').val(result);
         });
     }

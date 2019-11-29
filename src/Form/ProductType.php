@@ -20,7 +20,8 @@ class ProductType extends AbstractType
             ->add('forMonth', DateType::class, array(
                 'widget' => 'single_text',
                 'format' => 'MM.yyyy',
-                'disabled' => true,
+                //'disabled' => true,
+                'attr' => ['readonly' => true],
             ))
             ->add('feeInDays')
             //->add('isPaid')

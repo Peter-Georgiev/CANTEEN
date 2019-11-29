@@ -28,14 +28,14 @@ $(document).ready(function () {
 
             payment.find('#class_id').on('change', (event) => {
                 let studentId = 0;//Number(payment.find('#student_id').val());
-                let num = Number(event.target.value);
-                selectedClassStudent(data, studentId, num);
+                let classId = Number(event.target.value);
+                selectedClassStudent(data, studentId, classId);
             });
 
             payment.find('#student_id').on('change', (event) => {
-                let num = Number(event.target.value);
+                let studentId = Number(event.target.value);
                 let classId = Number(payment.find('#class_id').val());
-                selectedClassStudent(data, num, classId);
+                selectedClassStudent(data, studentId, classId);
             });
 
             checkPricePayment();
@@ -43,7 +43,6 @@ $(document).ready(function () {
     }
 
     function selectedClassStudent(data, studentId = 0, classId = 0) {
-        let isFirstElement = false;
         let outputClass = [];
         let outputStudent = [];
         let outputPrice = '';
@@ -53,82 +52,67 @@ $(document).ready(function () {
         let outputIsPaid = '';
         let outputProductId = '';
 
-        $.each(data['classes'], function(key, value) {
-
-            if (classId > 0 && isFirstElement === false) {
-                outputClass.push('');
-            }
-
-            if (isFirstElement === false) {
-                outputStudent.push('');
-            }
-
-            if (value.id !== classId) {
+        if (classId > 0) {
+            $.each(data['classes'], function (key, value) {
+                if (value.id == classId) {
+                    outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
+                    outputSeller = value.seller;
+                    selectStudents(key, value, studentId);
+                }
+            });
+            $.each(data['classes'], function (key, value) {
+                if (value.id != classId) {
+                   outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
+                }
+            });
+        } else if (classId == 0) {
+            let tempClsId = [];
+            $.each(data['classes'], function (key, value) {
                 outputClass.push('<option value="' + value.id + '">' + value.name + '</option>');
-            } else if (classId > 0) {
-                outputClass[0] = '<option value="' + value.id + '">' + value.name + '</option>';
-            }
-
-            if (classId > 0 && studentId > 0) {
-                if (value.id === classId) {
-                    $.each(value.students, function (key, value) {
-                        if (value.studentId !== studentId) {
-                            outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                        } else {
-                            outputStudent[0] = '<option value="' + value.studentId + '">' + value.student + '</option>';
-                            outputSeller = value.seller;
-                            outputPrice = value.price;
-                            outputForMonth = value.forMonth;
-                            outputFeeInDays = value.feeIndays;
-                            outputIsPaid = value.isPaid;
-                            outputProductId = value.productId;
-                        }
-                    });
+                tempClsId.push(value.id);
+                if (value.id == tempClsId[0]) {
+                    outputSeller = value.seller;
+                    selectStudents(key, value, studentId);
                 }
-            } else if (classId > 0) {
-                if (value.id === classId) {
-                    let isFirstStudentName = false;
-                    $.each(value.students, function (key, value) {
-                        if (isFirstStudentName === false) {
-                            outputStudent[0] = '<option value="' + value.studentId + '">' + value.student + '</option>';
-                            outputSeller = value.seller;
-                            outputPrice = value.price;
-                            outputForMonth = value.forMonth;
-                            outputFeeInDays = value.feeIndays;
-                            outputIsPaid = value.isPaid;
-                            outputProductId = value.productId;
-                            isFirstStudentName =true;
-                        } else {
-                            outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                        }
-                    });
-                }
-            } else if (isFirstElement === false) {
-                let isFirstStudentName = false;
-                $.each(value.students, function (key, value) {
-                    if (isFirstStudentName === false) {
-                        outputStudent[0] = '<option value="' + value.studentId + '">' + value.student + '</option>';
-                        outputSeller = value.seller;
-                        outputPrice = value.price;
-                        outputForMonth = value.forMonth;
-                        outputFeeInDays = value.feeIndays;
-                        outputIsPaid = value.isPaid;
-                        outputProductId = value.productId;
-                        isFirstStudentName =true;
-                    } else {
-                        outputStudent.push('<option value="' + value.studentId + '">' + value.student + '</option>');
-                    }
-                });
-            }
-            isFirstElement = true;
-        });
+            });
+        }
 
-        payment.find('#class_id').html(outputClass.join(''));
-        payment.find('#student_id').html(outputStudent.join(''));
+        function selectStudents(key, value, studentId) {
+            let tempStdId = [];
+            $.each(value.students, function (k, v) {
+                tempStdId.push(v.studentId);
+                if (studentId == 0) {
+                    studentId = tempStdId[0];
+                }
+
+                if (v.studentId == studentId) {
+                    outputStudent.push('<option value="' + v.studentId + '">' + v.student + '</option>');
+                    outputPrice = v.price;
+                    outputForMonth = v.forMonth;
+                    outputFeeInDays = v.feeIndays;
+                    outputIsPaid = v.isPaid;
+                    outputProductId = v.productId;
+                }
+            });
+
+            $.each(value.students, function (k, v) {
+                if (v.studentId != studentId) {
+                    outputStudent.push('<option value="' + v.studentId + '">' + v.student + '</option>');
+                }
+            });
+        }
+
+        if (outputClass.length > 0){
+            payment.find('#class_id').html(outputClass.join(''));
+        }
+        if (outputStudent.length > 0){
+            payment.find('#student_id').html(outputStudent.join(''));
+        }
         payment.find('#payment_price').val(outputPrice);
         payment.find('#payment_seller').val(outputSeller);
         payment.find('#product_forMonth').val(outputForMonth);
         payment.find('#product_id').val(outputProductId);
+
     }
 
     function checkPricePayment() {

@@ -138,7 +138,6 @@ $(document).ready(function () {
                             let studentFullName = rowText[0];
                             let className = rowText[1];
                             let price = rowText[5];
-                            let status = rowText[3];
                             let forMonth = rowText[4];
                             let paymentDay = rowText[6];
                             let message = `Изтривате плащане на \"${studentFullName}\" от \"${className}\" клас\n` +

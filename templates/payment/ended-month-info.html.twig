@@ -9,6 +9,9 @@
             {% if dateTime is defined %}
                 <span>{{ dateTime|date('m.Y') }}</span>
             {% endif %}
+            {% if class is defined %}
+                 на <span>{{ class.name }} клас.</span>
+            {% endif %}
         </legend>
         <div class="table-responsive">
             <table id="dataTable"  class="display" cellspacing="0" width="100%">

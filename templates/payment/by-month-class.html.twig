@@ -3,8 +3,11 @@
 {% block title %}Справка за месец!{% endblock %}
 
 {% block main %}
+    <style>
+
+    </style>
     <div class="container body-content span=10 offset=2">
-        <div class="well" id="payment">
+        <div class="well" id="payment" hidden>
             <form class="form-horizontal" action="{{ path('payment_ended_mont_info') }}" method="POST">
                 <fieldset>
                     <legend>Справка за месец
@@ -12,6 +15,12 @@
                             <span>{{ month|date('m.Y') }}</span>
                         {% endif %}
                     </legend>
+                    <div class="form-group">
+                        <div class="col-sm-4">
+                            <label class="control-label" for="class_id">Избор на всички класове</label>
+                            <input type="checkbox" id="class_all" name="class[all]" value="1">
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="col-sm-2" id="class">
                             <label class="control-label" for="class_id">От клас</label>
@@ -26,11 +35,10 @@
                     <div class="form-group">
                         <div class="col-sm-2" id="class">
                             <label class="control-label" for="month">Месец</label>
-                            <input type="text" id="month" name="month" readonly="true"
+                            <input type="text" id="month" name="month"
                                    class="monthPicker form-control" />
                         </div>
                     </div>
-
 
                     <div class="form-group">
                         <div class="col-sm-5 col-sm-offset-5">
@@ -43,8 +51,19 @@
         </div>
     </div>
 
+    <div class="container body-content span=8 offset=2">
+        <div id="notifications-table">
+            <div id="loadingBox" class="notification">
+                <span>Зареждане на данните …</span>
+            </div>
+            <div id="errorBox" class="notification">
+                <span>Грешка в данните!</span>
+            </div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block jsCustomPage %}
-    {{ encore_entry_script_tags('pageEndedMonthInfo') }}
+    {{ encore_entry_script_tags('pageByMonthClass') }}
 {% endblock %}

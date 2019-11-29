@@ -78,9 +78,9 @@ $(document).ready(function () {
                     targets: -2,
                     data: function (row, type, val, meta) {
                         if (row.isPaid) {
-                            return "<button id='editBtn' class='btn-default' disabled>Редактиране!</button>";
+                            return "<button id='editBtn' class='btn-default' disabled>Редакция!</button>";
                         }
-                        return "<button id='editBtn' class='btn-warning'>Редактиране!</button>";
+                        return "<button id='editBtn' class='btn-warning'>Редакция!</button>";
                     },
                 }, {
                     targets: -1,

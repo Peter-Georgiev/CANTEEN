@@ -75,7 +75,7 @@ $(document).ready(function () {
                     targets: -3,
                     data: function (row, type, val, meta) {
 
-                        return "<button id='printBtn' class='btn-warning'>Принтиране</button>";
+                        return "<button id='printBtn' class='btn-info'>Принтиране</button>";
                     },
                 }, {
                     targets: -2,
@@ -84,9 +84,9 @@ $(document).ready(function () {
                         if (row.isMontEnded) {
                             return "<button id='editBtn' class='btn-default' disabled>Затворено</button>";
                         } else if (row.isPaid) {
-                            return "<button id='editBtn' class='btn-danger'>Редактиране!</button>";
+                            return "<button id='editBtn' class='btn-danger'>Редакция!</button>";
                         }
-                        return "<button id='editBtn' class='btn-warning'>Редактиране!</button>";
+                        return "<button id='editBtn' class='btn-warning'>Редакция!</button>";
                     },
                 }, {
                     targets: -1,

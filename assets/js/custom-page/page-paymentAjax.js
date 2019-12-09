@@ -10,10 +10,17 @@ $(document).ready(function () {
         dataType:   'json',
         async:      true,
         success: function(data, status) {
+            // Add footer
+            table.append('<tfoot><tr><th colspan="12" style="text-align:right"></th><th></th></tr></tfoot>');
+
             table.dataTable({
                 data: data['payments'],
                 rowId: 'id',
                 //pagingType: 'full_numbers', // "simple" option for 'Previous' and 'Next' buttons only
+                fixedHeader: {
+                    header: true,
+                    footer: true
+                },
                 columns: [
                     {
                         data: "class", // can be null or undefined
@@ -150,6 +157,40 @@ $(document).ready(function () {
                             printPdfButton(`${path}/pdf/${id}`);
                         }
                     });
+                },
+                footerCallback: function ( row, data, start, end, display ) {
+                    let columNumver = 5;
+                    var api = this.api(), data;
+
+                    // Remove the formatting to get integer data for summation
+                    let intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\лв].+/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    // Total over all pages
+                    let total = api
+                        .column(columNumver)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );
+
+                    // Total over this page
+                    let pageTotal = api
+                        .column(columNumver, { page: 'current'} )
+                        .data()
+                        .reduce( function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );
+
+                    // Update footer
+                    $(api.column(columNumver).footer() ).html(
+                        'Сума на текущата страница: ' + pageTotal.toFixed(2) + ' лв.' +
+                        ' ( Сума от всички страници: ' + total.toFixed(2) + ' лв. )'
+                    );
                 }
             });
         },

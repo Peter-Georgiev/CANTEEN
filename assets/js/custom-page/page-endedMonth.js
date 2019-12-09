@@ -25,6 +25,40 @@ $(document).ready(function () {
         fnDrawCallback: function( oSettings ) {
             $('#loadingBox').hide();
             $('.table-responsive').show();
+        },
+        footerCallback: function ( row, data, start, end, display ) {
+            let columNumver = 2;
+            var api = this.api(), data;
+
+            // Remove the formatting to get integer data for summation
+            let intVal = function (i) {
+                return typeof i === 'string' ?
+                    i.replace(/[\лв].+/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+
+            // Total over all pages
+            let total = api
+                .column(columNumver)
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Total over this page
+            let pageTotal = api
+                .column(columNumver, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $(api.column(columNumver).footer() ).html(
+                'Сума на текущата страница: ' + pageTotal.toFixed(2) + ' лв.' +
+                ' ( Сума от всички страници: ' + total.toFixed(2) + ' лв. )'
+            );
         }
     });
 });

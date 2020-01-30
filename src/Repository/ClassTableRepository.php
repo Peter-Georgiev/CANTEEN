@@ -52,7 +52,7 @@ class ClassTableRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findPaymentByMonth(\DateTime $date, $isPaid = false, $isMonthEnded = false)
+    public function findPaymentByMonth_OLD(\DateTime $date, $isPaid = false, $isMonthEnded = false)
     {
         $sql = "SELECT c.id AS `id`, c.name AS `name`,           
             CONCAT(
@@ -66,15 +66,30 @@ class ClassTableRepository extends ServiceEntityRepository
             INNER JOIN product AS p ON p.students_id = s.id
             WHERE p.is_paid = :isPaid
             AND p.is_month_ended = :isMonthEnded
-            AND DATE_FORMAT(p.for_month, '%m.%Y') = :month                
+            -- AND DATE_FORMAT(p.for_month, '%m.%Y') = :month                
             GROUP BY id";
         $conn = $this->getEntityManager()->getConnection();
         $stmt = $conn->prepare($sql);
         $stmt->bindValue('isPaid', $isPaid);
         $stmt->bindValue('isMonthEnded', $isMonthEnded);
-        $stmt->bindValue('month', $date->format('m.Y'));
+        //$stmt->bindValue('month', $date->format('m.Y'));
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+
+    public function findPaymentByMonth(\DateTime $date, $isPaid = false, $isMonthEnded = false)
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.products', 'p')
+            ->where('p.isPaid = ?1' )
+            ->andWhere('p.isMonthEnded = ?2' )
+            ->andWhere('p.price > 0')
+            ->andWhere('p.feeInDays > 0')
+            ->setParameter(1, $isPaid)
+            ->setParameter(2, $isMonthEnded)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findByMonth(\DateTime $date, $isPaid = true, $isMonthEnded = false)

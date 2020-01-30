@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\ClassTable;
 use App\Entity\Payment;
 use App\Entity\Product;
+use App\Entity\Student;
 use App\Form\PaymentType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,17 +44,13 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @Route("/payment/create.ajax", name="payment_create.ajax")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @param Request $request
-     * @return JsonResponse|Response
-     * @throws \Exception
+     * @Route("/payment/test", name="payment_test")
      */
-    public function createAjax(Request $request)
+    public function test(Request $request)
     {
         $date = new \DateTime('now');
         $classes = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findPaymentByMonth($date->modify('+1 month'));
+            ->findPaymentByMonth_OLD($date->modify('+1 month'));
 
         $result = array();
         $i = 0;
@@ -74,6 +71,125 @@ class PaymentController extends AbstractController
                     $obj[$k] = $v;
                 }
                 $result[$i]['students'][] = $obj;
+                //dd($obj);
+            }
+            $i++;
+        }
+        dd($result);
+    }
+
+    /**
+     * @Route("/payment/test2", name="payment_test2")
+     */
+    public function test2(Request $request)
+    {
+        $date = new \DateTime('now');
+        $classes = $this->getDoctrine()->getRepository(ClassTable::class)
+            ->findPaymentByMonth($date->modify('+1 month'));
+
+        $result = array();
+        $i = 0;
+        /** @var ClassTable $class */
+        foreach ($classes as $class) {
+            $result[$i] = array(
+                'id' => $class->getId(),
+                'name' => $class->getName(),
+                'seller' => $this->getUser()->getFullName(),
+                'students' => array(
+
+                ),
+            );
+
+            /** @var Student $student */
+            foreach ($class->getStudents() as $student) {
+                /** @var Product $product */
+                foreach ($student->getProducts() as $product) {
+                    $result[$i]['students'][] = array(
+                        'studentId' => $student->getId(),
+                        'student' => $student->getFullName(),
+                        'price' => $product->getPrice(),
+                        'productId' => $product->getId(),
+                        'isPaid' => $product->getIsPaid(),
+                        'feeInDays' => $product->getFeeInDays(),
+                        'forMonth' => date_format($product->getForMonth(), 'm.Y'),
+                        'dateCreate' => date_format($product->getDateCreate(), 'd.m.Y H:i:s'),
+                        'lasDate' => date_format($product->getLastEdit(), 'd.m.Y H:i:s'),
+                    );
+                    break;
+                }
+            }
+            $i++;
+        }
+
+        dd($result);
+    }
+
+    /**
+     * @Route("/payment/create.ajax", name="payment_create.ajax")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
+     * @return JsonResponse|Response
+     * @throws \Exception
+     */
+    public function createAjax(Request $request)
+    {
+        $date = new \DateTime('now');
+        $classes = $this->getDoctrine()->getRepository(ClassTable::class)
+            ->findPaymentByMonth($date->modify('+1 month'));
+/*
+        $result = array();
+        $i = 0;
+        foreach ($classes as $class) {
+            $result[$i] = array(
+                'id' => $class['id'],
+                'name' => $class['name'],
+                'seller' => $this->getUser()->getFullName(),
+                'students' => array(),
+            );
+
+            $tokens = array_map('trim',explode("||", $class['students']));
+            foreach ($tokens as $token) {
+                $obj = array();
+                $t = array_map('trim', explode(',', $token));
+                foreach ($t as $a) {
+                    list($k, $v) = explode('=>', $a);
+                    $obj[$k] = $v;
+                }
+                $result[$i]['students'][] = $obj;
+            }
+            $i++;
+        }
+*/
+        $result = array();
+        $i = 0;
+        /** @var ClassTable $class */
+        foreach ($classes as $class) {
+            $result[$i] = array(
+                'id' => $class->getId(),
+                'name' => $class->getName(),
+                'seller' => $this->getUser()->getFullName(),
+                'students' => array(
+
+                ),
+            );
+
+            /** @var Student $student */
+            foreach ($class->getStudents() as $student) {
+                /** @var Product $product */
+                foreach ($student->getProducts() as $product) {
+                    $result[$i]['students'][] = array(
+                        'studentId' => $student->getId(),
+                        'student' => $student->getFullName(),
+                        'price' => $product->getPrice(),
+                        'productId' => $product->getId(),
+                        'isPaid' => $product->getIsPaid(),
+                        'feeInDays' => $product->getFeeInDays(),
+                        'forMonth' => date_format($product->getForMonth(), 'm.Y'),
+                        'dateCreate' => date_format($product->getDateCreate(), 'd.m.Y H:i:s'),
+                        'lasDate' => date_format($product->getLastEdit(), 'd.m.Y H:i:s'),
+                    );
+                    break;
+                }
             }
             $i++;
         }

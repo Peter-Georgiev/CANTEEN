@@ -67,9 +67,11 @@ class Product
     public function __construct()
     {
         $datetime = new \DateTime('now');
-        $this->forMonth = $datetime->modify('+1 month');
         $this->dateCreate = $datetime;
         $this->lastEdit = $datetime;
+        //month +1
+        $dateMonthNex = new \DateTime('now');;
+        $this->forMonth = $dateMonthNex->modify('+1 month');
         $this->isPaid = false;
         $this->isMonthEnded = false;
         $this->students = new ArrayCollection();

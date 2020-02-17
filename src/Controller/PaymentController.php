@@ -136,9 +136,10 @@ class PaymentController extends AbstractController
         $date = new \DateTime('now');
         $classes = $this->getDoctrine()->getRepository(ClassTable::class)
             ->findPaymentByMonth($date->modify('+1 month'));
-/*
+
         $result = array();
         $i = 0;
+        /*
         foreach ($classes as $class) {
             $result[$i] = array(
                 'id' => $class['id'],
@@ -159,18 +160,15 @@ class PaymentController extends AbstractController
             }
             $i++;
         }
-*/
-        $result = array();
-        $i = 0;
+        */
+
         /** @var ClassTable $class */
         foreach ($classes as $class) {
             $result[$i] = array(
                 'id' => $class->getId(),
                 'name' => $class->getName(),
                 'seller' => $this->getUser()->getFullName(),
-                'students' => array(
-
-                ),
+                'students' => array(),
             );
 
             /** @var Student $student */
@@ -376,7 +374,7 @@ class PaymentController extends AbstractController
         $date = new \DateTime('now');
         $date->modify('-1 month');
         $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findPaymentByMonth($date, true);
+            ->findPaymentByMonth($date, true, false);
 
         if (!$classTables) {
             return $this->render('payment/view-end-months.html.twig', ['month' => $date,

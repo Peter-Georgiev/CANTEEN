@@ -344,6 +344,7 @@ class PaymentController extends AbstractController
         }
 
         $json =  json_encode($closingMonths, JSON_UNESCAPED_UNICODE);
+        //dd('Услугата е временно спряна!');
         return $this->render('payment/closing-month.html.twig', ['json' => $json]);
     }
 

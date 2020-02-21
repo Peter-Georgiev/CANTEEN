@@ -344,7 +344,7 @@ class PaymentController extends AbstractController
         }
 
         $json =  json_encode($closingMonths, JSON_UNESCAPED_UNICODE);
-        return $this->render('payment/closing_month.html.twig', ['json' => $json]);
+        return $this->render('payment/closing-month.html.twig', ['json' => $json]);
     }
 
     /**

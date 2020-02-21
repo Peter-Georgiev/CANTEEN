@@ -77,35 +77,41 @@ class ClassTableRepository extends ServiceEntityRepository
         return $stmt->fetchAll();
     }
 
-    public function findPaymentByMonth(\DateTime $date, $isPaid = false, $isMonthEnded = false)
+    public function findPaymentByMonth($strDate = '', $isPaid = false, $isMonthEnded = false)
     {
         return $this->createQueryBuilder('c')
-            ->innerJoin('c.students', 's')
-            ->innerJoin('s.products', 'p')
-            //->where('p.isPaid = ?1' )
-            //->andWhere('p.isMonthEnded = ?2' )
-            ->where('p.isMonthEnded = ?2')
-            ->andWhere('p.price > 0')
-            ->andWhere('p.feeInDays > 0')
-            //->setParameter(1, $isPaid)
-            ->setParameter(2, $isMonthEnded)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByMonth(\DateTime $date, $isPaid = true, $isMonthEnded = false)
-    {
-        return $this->createQueryBuilder('c')
+            ->select('c, s, p')
             ->innerJoin('c.students', 's')
             ->innerJoin('s.products', 'p')
             ->where('p.isPaid = ?1' )
             ->andWhere('p.isMonthEnded = ?2' )
-            ->andWhere( "DATE_FORMAT(p.forMonth, '%m.%Y') = ?3" )
+            ->andWhere('p.price > 0')
+            ->andWhere('p.feeInDays > 0')
+            ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
             ->setParameter(1, $isPaid)
             ->setParameter(2, $isMonthEnded)
-            ->setParameter(3, $date->format('m.Y'))
+            ->setParameter('date', $strDate . '%')
             ->orderBy('c.name', 'ASC')
-            //->addOrderBy('s.fullName', 'ASC')
+            ->addOrderBy('s.fullName', 'ASC')
+            ->addOrderBy('p.forMonth', 'DESC')
+            ->addOrderBy('p.isPaid', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByClosingMonth($isMonthEnded = false, $strDate = '')
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c, s, p, pay')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.products', 'p')
+            ->innerJoin('p.payment', 'pay')
+            ->where('p.isMonthEnded = ?1')
+            ->andWhere('p.isPaid = ?2')
+            ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
+            ->setParameter(1, $isMonthEnded)
+            ->setParameter(2, true)
+            ->setParameter('date', $strDate . '%')
             ->getQuery()
             ->getResult();
     }

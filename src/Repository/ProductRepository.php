@@ -64,17 +64,16 @@ class ProductRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByMonthAndPaid(\DateTime $date, $isPaid = false)
+    public function findByDateDontPaidMonth($strDate = '')
     {
-        return $this->createQueryBuilder('product')
-        ->innerJoin('product.students', 'students')
-        ->innerJoin('students.class', 'class')
-        ->where('product.isPaid = ?1')
-        ->andWhere( "DATE_FORMAT(product.forMonth, '%Y-%m') = ?2" )
-        ->setParameter(1, $isPaid)
-        ->setParameter(2, $date->format('Y-m'))
-        ->getQuery()
-        ->getResult();
+        return $this->createQueryBuilder('p')
+            ->select('p')
+            ->where('p.isPaid = 0')
+            ->andWhere('p.isMonthEnded = 0')
+            ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
+            ->setParameter('date', $strDate . '%')
+            ->getQuery()
+            ->getResult();
     }
 
     // /**

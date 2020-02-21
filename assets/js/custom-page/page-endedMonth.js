@@ -6,7 +6,7 @@ $(document).ready(function () {
     table.dataTable({
         //pagingType: 'full_numbers', // "simple" option for 'Previous' and 'Next' buttons only
         order: [
-            [0, 'asc'], [2, 'asc'], [1, 'des']
+            [0, 'asc'], [1, 'asc']
         ],
         language: bg.language,
         dom: 'lfBSrtip',

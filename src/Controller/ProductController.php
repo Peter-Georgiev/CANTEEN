@@ -32,7 +32,8 @@ class ProductController extends AbstractController
         } else {
             $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
                 ->findAllActiveStudentsByUserId($this->getUser()->getId());
-            $products = $this->getDoctrine()->getRepository(Product::class)->findAllActiveStudentsByUserId($this->getUser()->getId());
+            $products = $this->getDoctrine()->getRepository(Product::class)
+                ->findAllActiveStudentsByUserId($this->getUser()->getId());
         }
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {
@@ -146,6 +147,10 @@ class ProductController extends AbstractController
                 return $this->redirectToRoute('app_product_index');
             }
 
+            if ($product->getIsPaid() || $product->getIsMonthEnded()) {
+                return $this->redirectToRoute('app_product_index');
+            }
+
             $form = $this->createForm(ProductType::class, $product);
             $form->handleRequest($request);
 
@@ -195,6 +200,10 @@ class ProductController extends AbstractController
 
         $product = $this->getDoctrine()->getRepository(Product::class)->find($id);
         if (!$product) {
+            return $this->redirectToRoute('app_product_index');
+        }
+
+        if ($product->getIsPaid() || $product->getIsMonthEnded()) {
             return $this->redirectToRoute('app_product_index');
         }
 
@@ -249,6 +258,7 @@ class ProductController extends AbstractController
                 'class' => $p->getStudent()->getClass()->getName(),
                 'price' => $p->getPrice(),
                 'isPaid' => $p->getIsPaid(),
+                'isMonthEnded' => $p->getIsMonthEnded(),
                 'forMonth' => $p->getForMonth()->format('m.Y'),
                 'feeInDays' => $p->getFeeInDays(),
                 'dateCreate' => $p->getDateCreate()->format('d.m.Y H:i'),

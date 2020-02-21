@@ -29,6 +29,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                {% if payments is defined %}
                     {% for payment in payments %}
                         <tr>
                             <td>{{ payment.products.student.class.name }}</td>
@@ -46,6 +47,7 @@
                             {% endif %}
                         </tr>
                     {% endfor %}
+                {% endif %}
                 </tbody>
                 <tfoot>
                     <tr>

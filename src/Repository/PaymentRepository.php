@@ -19,7 +19,6 @@ class PaymentRepository extends ServiceEntityRepository
         parent::__construct($registry, Payment::class);
     }
 
-
     public function findAllCompletedByMonth(\DateTime $date, $isPaid = true, $isMonthEnded = false)
     {
         $sql = "SELECT *
@@ -42,38 +41,21 @@ class PaymentRepository extends ServiceEntityRepository
     public function findBydMonth(\DateTime $date, $isPaid = false, $isMonthEnded = false)
     {
         return $this->createQueryBuilder('payment')
-            ->select()
+            ->select('payment, products, students, class')
             ->innerJoin('payment.products', 'products')
             ->innerJoin('products.students', 'students')
             ->innerJoin('students.class', 'class')
-            //->where('products.isPaid = ?1')
-            ->where('payment.isMonthEnded = ?2')
+            ->where('products.isPaid = ?1')
+            ->andWhere('payment.isMonthEnded = ?2')
             ->andWhere('products.isMonthEnded = ?3')
-            ->andWhere( "DATE_FORMAT(products.forMonth, '%m.%Y') = ?4" )
-            //->setParameter(1, $isPaid)
+            ->andWhere( "DATE_FORMAT(products.forMonth, '%m.%Y') LIKE :date" )
+            ->setParameter(1, $isPaid)
             ->setParameter(2, $isMonthEnded)
             ->setParameter(3, $isMonthEnded)
-            ->setParameter(4, $date->format('m.Y'))
+            ->setParameter('date', $date->format('m.Y') . '%')
             ->orderBy('products.forMonth', 'DESC')
             ->addOrderBy('class.name', 'ASC')
             ->addOrderBy('students.fullName', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findNotCompleteMonthByClassIdAndMonth($classId, \DateTime $date)
-    {
-        return $this->createQueryBuilder('payment')
-            ->select()
-            ->innerJoin('payment.products', 'products')
-            ->innerJoin('products.students', 'students')
-            ->innerJoin('students.class', 'class')
-            ->where('class.id = ?1')
-            ->andWhere('payment.isMonthEnded = false')
-            ->andWhere('products.isMonthEnded = false')
-            ->andWhere( "DATE_FORMAT(products.forMonth, '%Y-%m') = ?2" )
-            ->setParameter(1, $classId)
-            ->setParameter(2, $date->format('Y-m'))
             ->getQuery()
             ->getResult();
     }

@@ -6,7 +6,9 @@ use App\Entity\ClassTable;
 use App\Entity\Payment;
 use App\Entity\Product;
 use App\Entity\Student;
+use App\Entity\User;
 use App\Form\PaymentType;
+use mysql_xdevapi\RowResult;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 // Include Dompdf required namespaces
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Symfony\Component\Validator\Tests\Fixtures\ToString;
 use function Composer\Autoload\includeFile;
 
 class PaymentController extends AbstractController
@@ -79,52 +82,6 @@ class PaymentController extends AbstractController
     }
 
     /**
-     * @Route("/payment/test2", name="payment_test2")
-     */
-    public function test2(Request $request)
-    {
-        $date = new \DateTime('now');
-        $classes = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findPaymentByMonth($date->modify('+1 month'));
-
-        $result = array();
-        $i = 0;
-        /** @var ClassTable $class */
-        foreach ($classes as $class) {
-            $result[$i] = array(
-                'id' => $class->getId(),
-                'name' => $class->getName(),
-                'seller' => $this->getUser()->getFullName(),
-                'students' => array(
-
-                ),
-            );
-
-            /** @var Student $student */
-            foreach ($class->getStudents() as $student) {
-                /** @var Product $product */
-                foreach ($student->getProducts() as $product) {
-                    $result[$i]['students'][] = array(
-                        'studentId' => $student->getId(),
-                        'student' => $student->getFullName(),
-                        'price' => $product->getPrice(),
-                        'productId' => $product->getId(),
-                        'isPaid' => $product->getIsPaid(),
-                        'feeInDays' => $product->getFeeInDays(),
-                        'forMonth' => date_format($product->getForMonth(), 'm.Y'),
-                        'dateCreate' => date_format($product->getDateCreate(), 'd.m.Y H:i:s'),
-                        'lasDate' => date_format($product->getLastEdit(), 'd.m.Y H:i:s'),
-                    );
-                    break;
-                }
-            }
-            $i++;
-        }
-
-        dd($result);
-    }
-
-    /**
      * @Route("/payment/create.ajax", name="payment_create.ajax")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param Request $request
@@ -135,33 +92,11 @@ class PaymentController extends AbstractController
     {
         $date = new \DateTime('now');
         $classes = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findPaymentByMonth($date->modify('+1 month'));
+            ->findPaymentByMonth();
+            //->findPaymentByMonth($date->modify('+1 month')->format('m.Y'));
 
         $result = array();
         $i = 0;
-        /*
-        foreach ($classes as $class) {
-            $result[$i] = array(
-                'id' => $class['id'],
-                'name' => $class['name'],
-                'seller' => $this->getUser()->getFullName(),
-                'students' => array(),
-            );
-
-            $tokens = array_map('trim',explode("||", $class['students']));
-            foreach ($tokens as $token) {
-                $obj = array();
-                $t = array_map('trim', explode(',', $token));
-                foreach ($t as $a) {
-                    list($k, $v) = explode('=>', $a);
-                    $obj[$k] = $v;
-                }
-                $result[$i]['students'][] = $obj;
-            }
-            $i++;
-        }
-        */
-
         /** @var ClassTable $class */
         foreach ($classes as $class) {
             $result[$i] = array(
@@ -220,6 +155,8 @@ class PaymentController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $payment->setSeller($this->getUser()->getFullName());
                 $payment->setLastEditUser($this->getUser()->getFullName());
+                $namePayer = $this->strToLoweAndUcFirst($payment->getNamePayer());
+                $payment->setNamePayer($namePayer);
                 $product = $this->getDoctrine()->getRepository(Product::class)
                     ->find($request->get('product')['id']);
 
@@ -371,17 +308,43 @@ class PaymentController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $date = new \DateTime('now');
-        $date->modify('-1 month');
         $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
-            ->findPaymentByMonth($date, true, false);
+            ->findByClosingMonth(false);
 
-        if (!$classTables) {
-            return $this->render('payment/view-end-months.html.twig', ['month' => $date,
-                'classes' => [['id' => '0', 'name' => 'Няма за преключване!']]
-            ]);
+        $closingMonths = array();
+        /** @var ClassTable $classTable */
+        foreach ($classTables as $classTable) {
+            /** @var Student $student */
+            foreach ($classTable->getStudents() as $student) {
+                /** @var Product $product */
+                foreach ($student->getProducts() as $product) {
+                    $forMonth = ($product->getForMonth())->format('m.Y');
+                    $name = $classTable->getName();
+
+                    if (!array_key_exists($forMonth, $closingMonths)) {
+                        $closingMonths[$forMonth] = array();
+                    }
+                    if (!array_key_exists($name, $closingMonths[$forMonth])) {
+                        $closingMonths[$forMonth][$name] = array(
+                            'count' => 0,
+                            'id' => $classTable->getId(),
+                            'countPaid' =>  0,
+                            'countDontPaid' => 0,
+                        );
+                    }
+
+                    $closingMonths[$forMonth][$name]['count'] = ++$closingMonths[$forMonth][$name]['count'];
+                    if ($product->getIsPaid()) {
+                        $closingMonths[$forMonth][$name]['countPaid'] = ++$closingMonths[$forMonth][$name]['countPaid'];
+                    } else {
+                        $closingMonths[$forMonth][$name]['countDontPaid'] = ++$closingMonths[$forMonth][$name]['countDontPaid'];
+                    }
+                }
+            }
         }
-        return $this->render('payment/view-end-months.html.twig', ['month' => $date, 'classes' => $classTables]);
+
+        $json =  json_encode($closingMonths, JSON_UNESCAPED_UNICODE);
+        return $this->render('payment/closing_month.html.twig', ['json' => $json]);
     }
 
     /**
@@ -396,31 +359,42 @@ class PaymentController extends AbstractController
         if (!($this->getUser()->isAdmin() || $this->getUser()->isSeller())) {
             return $this->redirectToRoute('home');
         }
+
         try {
-            $date = new \DateTime();
-            $tokens = explode('.', $id);
-            if (count($tokens) !== 2) {
+            if (count(explode('.', $id)) !== 2) {
                 return $this->redirectToRoute('payment_ended_mont_info');
             }
 
-            $date->setDate($tokens[1], $tokens[0], '1');
-            $payments = $this->getDoctrine()->getRepository(Payment::class)
-                ->findBydMonth($date, true, false);
-            if (!$payments) {
-                return $this->redirectToRoute('payment_ended_mont_info');
-            }
+            $payments = array();
+            $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
+                ->findByClosingMonth(false, $id);
+            //Затварчне на останалите непреключени месеци.
+            $productsDontMonth = $this->getDoctrine()->getRepository(Product::class)
+                ->findByDateDontPaidMonth($id);
 
             $em = $this->getDoctrine()->getManager();
-            foreach ($payments as $payment) {
-                /** @var Payment $payment */
-                $payment->setIsMonthEnded(true);
-                $payment->getProducts()->setIsMonthEnded(true);
-                $em->persist($payment);
+            /** @var ClassTable $classTable */
+            foreach ($classTables as $classTable) {
+                /** @var Student $student */
+                foreach ($classTable->getStudents() as $student) {
+                    /** @var Product $product */
+                    foreach ($student->getProducts() as $product) {
+                        /** @var Payment $payment */
+                        $payments[] = $product->getPayment();
+                        $product->getPayment()->setIsMonthEnded(true);
+                        $product->setIsMonthEnded(true);
+                        $em->persist($product);
+                    }
+                }
+            }
+            //Затварчне на останалите непреключени месеци.
+            /** @var Product $productDontMonth */
+            foreach ($productsDontMonth as $productDontMonth) {
+                $productDontMonth->setIsMonthEnded(true);
             }
             $em->flush();
 
             return $this->render('payment/ended-month-info.html.twig', ['payments' => $payments]);
-
         } catch (\Exception $e) {
             return $this->render('payment/ended-month-info.html.twig', ['danger' => $e->getMessage()]);
         }
@@ -516,7 +490,7 @@ class PaymentController extends AbstractController
                 'class' => $payment->getProducts()->getStudent()->getClass()->getName(),
                 'teacher' => $payment->getProducts()->getStudent()->getUser()->getFullName(),
                 'forMonth' => $payment->getProducts()->getForMonth()->format('m.Y'),
-                'user' => $this->getUser()->getFullName(),
+                'user' => $payment->getSeller(),
                 'userRole' => $this->getUser()->getRoles()[0],
                 'lastEditUser' =>$payment->getLastEditUser(),
             );
@@ -577,5 +551,20 @@ class PaymentController extends AbstractController
             $i++;
         }
         return $result;
+    }
+
+    private function strToLoweAndUcFirst(string $str)
+    {
+        $string = '';
+        $token = array_map('trim', explode(' ', $str));
+        for ($i = 0; $i < count($token); $i++) {
+            if ($token[$i] !== '') {
+                $string .= mb_convert_case($token[$i], MB_CASE_TITLE,  'UTF-8');
+                if ($i < count($token) - 1) {
+                    $string .= ' ';
+                }
+            }
+        }
+        return $string;
     }
 }

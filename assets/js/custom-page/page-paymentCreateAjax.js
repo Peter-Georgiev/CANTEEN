@@ -11,8 +11,7 @@ $(document).ready(function () {
         success: function(data, status) {
             $('#loadingBox').hide();
             payment.show();
-            paymentCreate(data);
-
+            main(data);
         },
         error : function(xhr, textStatus, errorThrown) {
             $('#loadingBox').hide();
@@ -21,6 +20,15 @@ $(document).ready(function () {
             $('#errorBox').show();
         },
     });
+
+    function main(data) {
+        if (data['classes'].length === 0) {
+            payment.find('fieldset').hide();
+            payment.html('<legend style="text-align: center;">Няма въведени задължения!</legend>');
+        } else {
+            paymentCreate(data);
+        }
+    }
 
     function paymentCreate(data) {
         if (currentPathname === `${path}/create`) {

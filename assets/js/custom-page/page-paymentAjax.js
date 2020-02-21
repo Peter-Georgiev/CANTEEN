@@ -105,7 +105,7 @@ $(document).ready(function () {
                     },
                 }],
                 order: [
-                    [0, 'asc'], [1, 'asc'],[4, 'des'], [6, 'des']
+                    [4, 'des'], [0, 'asc'], [1, 'asc'], [6, 'des']
                 ],
                 language: bg.language,
                 dom: 'lfBSrtip',

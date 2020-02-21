@@ -69,6 +69,14 @@ $(document).ready(function () {
                         },
                         title: 'Редакция'
                     }, {
+                        data: function (row, type, val, meta) {
+                            if ( row.isMonthEnded) {
+                                return 'Затворен!';
+                            }
+                            return 'Отворен!';
+                        },
+                        title: 'Месечен статус'
+                    }, {
                         title: 'Редактиране'
                     }, {
                         title: 'Изтриване'
@@ -77,7 +85,7 @@ $(document).ready(function () {
                 columnDefs: [{
                     targets: -2,
                     data: function (row, type, val, meta) {
-                        if (row.isPaid) {
+                        if (row.isPaid || row.isMonthEnded) {
                             return "<button id='editBtn' class='btn-default' disabled>Редакция!</button>";
                         }
                         return "<button id='editBtn' class='btn-warning'>Редакция!</button>";
@@ -85,14 +93,14 @@ $(document).ready(function () {
                 }, {
                     targets: -1,
                     data: function (row, type, val, meta) {
-                        if (row.isPaid) {
+                        if (row.isPaid || row.isMonthEnded) {
                             return "<button id='deleteBtn' class='btn-default' disabled>Изтриване!</button>";
                         }
                         return "<button id='deleteBtn' class='btn-danger'>Изтриване!</button>"
                     },
                 }],
                 order: [
-                    [5, 'des'], [0, 'asc'], [1, 'asc']
+                    [5, 'des'], [0, 'asc'], [1, 'asc'], [6, 'des']
                 ],
                 language: bg.language,
                 dom: 'lfBSrtip',

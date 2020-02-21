@@ -29,11 +29,11 @@ class UserRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByFullName(User $user)
+    public function findByFullName($user)
     {
         return $this->createQueryBuilder('t')
             ->where('t.fullName = ?1')
-            ->setParameter(1, $user->getFullName())
+            ->setParameter(1, $user)
             ->getQuery()
             ->getResult();
     }

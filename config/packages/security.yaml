@@ -1,7 +1,10 @@
 security:
     encoders:
         App\Entity\User:
-            algorithm: auto
+            #algorithm: auto
+            #algorithm: argon2i
+            #algorithm: sodium
+            algorithm: bcrypt
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:

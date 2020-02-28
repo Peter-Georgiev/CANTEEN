@@ -6,7 +6,7 @@ $(document).ready(function () {
     let data = JSON.parse(
         divClosingMonth.getAttribute('data')
     );
-    main(data)
+    main(data);
 
     function main(data) {
         if (data.length === 0) {

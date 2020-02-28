@@ -268,6 +268,7 @@ class PaymentController extends AbstractController
         if (!$payment) {
             return $this->redirectToRoute('payment');
         }
+
         // Configure Dompdf according to your needs
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');

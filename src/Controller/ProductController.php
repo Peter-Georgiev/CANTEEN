@@ -64,11 +64,15 @@ class ProductController extends AbstractController
 
         $classTables = null;
         if ($this->getUser()->isAdmin()) {
-            $classTables = $this->getDoctrine()->getRepository(ClassTable::class)->findAllActiveStudents();
+            $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
+                //->findAllActiveStudents();
+                ->findForCreateProduct();
         } else {
             $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
-                ->findAllActiveStudentsByUserId($this->getUser()->getId());
+                //->findAllActiveStudentsByUserId($this->getUser()->getId());
+                ->findForCreateProduct($this->getUser()->getId());
         }
+
         $pricePerDays = $this->getDoctrine()->getRepository(PricePerDay::class)->findOnlyActivePrice();
 
         if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {

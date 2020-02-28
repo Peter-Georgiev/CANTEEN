@@ -187,12 +187,16 @@ $(document).ready(function () {
                         }, 0 );
 
                     // Update footer
+                    /*
                     $(api.column(columNumver).footer() ).html(
                         'Сума на текущата страница: ' + pageTotal.toFixed(2) + ' лв.' +
                         ' ( Сума от всички страници: ' + total.toFixed(2) + ' лв. )'
                     );
-                }
+                    */
+                },
+
             });
+
         },
         error : function(xhr, textStatus, errorThrown) {
             $('#loadingBox').hide();

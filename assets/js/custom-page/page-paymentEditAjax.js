@@ -2,8 +2,8 @@ const currentPathname = window.location.pathname;
 const payment = $('#payment');
 
 $(document).ready(function () {
-    payment.show();
 
+    payment.show();
     productEditId();
 
     function productEditId() {

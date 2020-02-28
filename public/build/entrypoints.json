@@ -82,7 +82,6 @@
         "/build/vendors~pageClassTable~pagePaymentAjax~pagePaymentCreateAjax~pagePaymentEditAjax~pagePricePerDayAjax~c15c64ac.js",
         "/build/vendors~pageClassTable~pagePaymentAjax~pagePaymentEditAjax~pagePricePerDayAjax~pageProductAjax~pageP~40fc3f6f.js",
         "/build/vendors~pageClassTable~pagePaymentAjax~pagePricePerDayAjax~pageProductAjax~pageStudent.js",
-        "/build/vendors~pageEndedMonth~pagePaymentAjax.js",
         "/build/pagePaymentAjax.js"
       ]
     },
@@ -118,7 +117,7 @@
         "/build/runtime.js",
         "/build/vendors~app~pageByMonthClass~pageClassTable~pageClosingMonth~pageEndedMonth~pagePaymentAjax~pagePaym~d355a1e8.js",
         "/build/vendors~pageByMonthClass~pageClassTable~pageClosingMonth~pageEndedMonth~pagePaymentAjax~pagePaymentC~b4a9e623.js",
-        "/build/vendors~pageEndedMonth~pagePaymentAjax.js",
+        "/build/vendors~pageEndedMonth.js",
         "/build/pageEndedMonth.js"
       ]
     },

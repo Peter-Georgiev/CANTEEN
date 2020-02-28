@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\ClassTable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\DocBlock\Tags\Return_;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @method ClassTable|null find($id, $lockMode = null, $lockVersion = null)
@@ -24,19 +26,22 @@ class ClassTableRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->where('c.name = ?1')
             ->setParameter(1, $classTable->getName())
+            ->orderBy('c.name', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     public function findAllActiveStudentsByUserId($userId)
     {
-        return $this->createQueryBuilder('class_table')
+        return $this->createQueryBuilder('c')
             ->select( )
-            ->innerJoin('class_table.students', 'students')
-            ->innerJoin('students.users', 'users')
-            ->where('students.isActive = 1')
-            ->andWhere('users.id = ?1')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('s.isActive = 1')
+            ->andWhere('u.id = ?1')
             ->setParameter(1, $userId)
+            ->orderBy('c.name', 'ASC')
+            ->addOrderBy('s.fullName', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -45,9 +50,53 @@ class ClassTableRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->select( )
-            ->innerJoin('c.students', 'student')
-            ->innerJoin('student.users', 'users')
-            ->where('student.isActive = 1')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('s.isActive = 1')
+            ->orderBy('c.name', 'ASC')
+            ->addOrderBy('s.fullName', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function findByDateCreateProduct()
+    {
+        $date = new \DateTime('now');
+        $date->modify('+1 month');
+
+        $qbSub  = $this->getEntityManager()->createQueryBuilder();
+        return $qbSub
+            ->select('s.id')
+            ->from('App:ClassTable', 'c')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.users', 'u')
+            ->leftJoin('s.products', 'p')
+            ->where('s.isActive = true')
+            ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
+            ->setParameter('date', '%' . $date->format('m.Y'))
+            //->setParameter('date', '%03.2020')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function findForCreateProduct($userID = 0)
+    {
+       $qbSub2  = $this->getEntityManager()->createQueryBuilder();
+        $query  =  $qbSub2->select('c, s')
+            ->from('App:ClassTable', 'c')
+            ->innerJoin('c.students', 's')
+            ->innerJoin('s.users', 'u')
+            ->where($qbSub2->expr()->notIn('s.id',':sub'))
+            ->andWhere('s.isActive = true')
+            ->setParameter('sub', $this->findByDateCreateProduct());
+
+        if ($userID > 0) {
+            $query->andWhere('u.id =?1')
+                ->setParameter(1, $userID);
+        }
+
+        return $query->orderBy('c.name', 'ASC')
+            ->addOrderBy('s.fullName', 'ASC')
             ->getQuery()
             ->getResult();
     }
@@ -90,7 +139,7 @@ class ClassTableRepository extends ServiceEntityRepository
             ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
             ->setParameter(1, $isPaid)
             ->setParameter(2, $isMonthEnded)
-            ->setParameter('date', $strDate . '%')
+            ->setParameter('date', '%' . $strDate)
             ->orderBy('c.name', 'ASC')
             ->addOrderBy('s.fullName', 'ASC')
             ->addOrderBy('p.forMonth', 'DESC')
@@ -111,7 +160,7 @@ class ClassTableRepository extends ServiceEntityRepository
             ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
             ->setParameter(1, $isMonthEnded)
             ->setParameter(2, true)
-            ->setParameter('date', $strDate . '%')
+            ->setParameter('date', '%' . $strDate)
             ->getQuery()
             ->getResult();
     }

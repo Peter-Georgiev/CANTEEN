@@ -2,48 +2,103 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
         body {font-family: DejaVu Sans, sans-serif;}
+        table {
+          padding: 2em;
+          border: 2px #808080 solid;
+          border-radius: 2em;
+          border-spacing: 0.5em;
+          border-collapse: separate;
+        }
+        .header1 {
+            border-bottom: 1px #808080 solid;
+            padding: 0.5em;
+            margin: 0.5em;
+            text-align: left;
+        }
     </style>
 </head>
 
-{% block title %}Платежно{% endblock %}
+{% block title %}{% endblock %}
 
 {% block main %}
-
     <div class="container body-content span=8 offset=2">
         <div class="well" id="paymentProduct">
             <fieldset>
-                <legend>
-                    Месечна Такса за столово хранене <span>{{ payment.products.forMonth|date('m.Y') }}</span>
-                </legend>
-                <table class="table table-striped">
+                <table>
+                    <caption>Платежно</caption>
                     <thead>
                         <tr>
-                            <th scope="col">Име на ученик</th>
-                            <th scope="col">Клас</th>
-                            <th scope="col">Цена</th>
-                            <th scope="col">Такса в дни</th>
-                            <th scope="col">Такса за месец</th>
-                            <th scope="col">Вносител</th>
-                            <th scope="col">Касиер</th>
-                            <th scope="col">Статус</th>
+                            <th colspan="1"></th>
+                            <th colspan="10" class="header1" style="text-align: center;">
+                                Месечна такса за столово хранене:
+                                <span style="font-weight: normal;">
+                                    {{ payment.products.forMonth|date('m.Y') }} год.
+                                </span>
+                            </th>
+                            <th colspan="1"></th>
+                        </tr>
+                    </thead>
+
+                    <thead>
+
+                        <tr>
+                            <th colspan="2"></th>
+                            <th colspan="3" align="left">Име на ученик</th>
+                            <td colspan="7" style="text-align: left;">{{ payment.products.student.fullName }}</td>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
+                            <th colspan="2"></th>
+                            <th colspan="3" align="left">Вносител</th>
+                            <td  colspan="7" style="text-align: left;">{{ payment.namePayer }}</td>
+                        </tr>
+                        <tr>
+                            <th colspan="2"></th>
+                            <th colspan="3" align="left">Касиер</th>
+                            <td colspan="7" style="text-align: left;">{{ payment.seller }}</td>
+                        </tr>
+                    </thead>
+                    <thead class="item-body">
+                        <tr>
+                            <th colspan="1">Клас</th>
+                            <th colspan="3">Такса в дни</th>
+                            <th colspan="5">Такса за месец</th>
+                            <th colspan="7">Статус</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ payment.products.student.fullName }}</td>
-                            <td>{{ payment.products.student.class.name }}</td>
-                            <td>{{ payment.products.price }} лв.</td>
-                            <td>{{ payment.products.feeInDays }}</td>
-                            <td>{{ payment.products.forMonth|date('m.Y') }}</td>
-                            <td>{{ payment.namePayer }}</td>
-                            <td>{{ payment.seller }}</td>
-                            {% if payment.products.isPaid %}
-                                <td>Платено</td>
-                            {% else %}
-                                <td>Неплтено</td>
-                            {% endif %}
+                            <td colspan="1" style="text-align: center;">{{ payment.products.student.class.name }}</td>
+                            <td colspan="3" style="text-align: center;">{{ payment.products.feeInDays }}</td>
+                            <td colspan="5" style="text-align: center;">{{ payment.products.forMonth|date('m.Y') }}</td>
+                            <td colspan="7" style="text-align: center;">
+                                {% if payment.products.isPaid %}
+                                    Платено
+                                {% else %}
+                                    Неплтено
+                                {% endif %}
+                            </td>
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="8" align="right">Цена:</th>
+                            <td colspan="9" align="left">{{ payment.products.price|number_format(2, '.', ',') }} лв.</td>
+                        </tr>
+                        <tr>
+                            <th colspan="8" align="right">Такса:</th>
+                            <td colspan="9" align="left">1.00 лв.</td>
+                        </tr>
+                        <tr>
+                            <th colspan="8" align="right">Тотал:</th>
+                            <td colspan="9" align="left">{{ (payment.products.price + 1)|number_format(2, '.', ',')}} лв.</td>
+                        </tr>
+                        <tr>
+                            <th colspan="8"></th>
+                            <td colspan="8" style="font: 10px">Дата: {{ "now"|date("d.m.Y") }}</td>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 <div class="form-group">

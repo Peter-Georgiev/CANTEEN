@@ -37,6 +37,28 @@
                             {% endif %}
                         </tr>
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col">Такса:</th>
+                            <td align="left">1.00 лв.</td>
+                        </tr>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col">Тотал:</th>
+                            <td align="left">{{ (payment.products.price + 1)|number_format(2, '.', ',')}} лв.</td>
+                        </tr>
+                    </tfoot>
                 </table>
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-4">

@@ -8,9 +8,9 @@ $(document).ready(function() {
 
     payment.find('#class_all').on('change', (event) => {
         if (payment.find('#class_id').prop("disabled")) {
-            payment.find('#class_id').attr('disabled', false)
+            payment.find('#class_id').attr('disabled', false);
         } else {
-            payment.find('#class_id').attr('disabled', true)
+            payment.find('#class_id').attr('disabled', true);
         }
     });
 
@@ -29,13 +29,11 @@ $(document).ready(function() {
     });
 
     monthPicker.focus(function () {
-        $(".ui-datepicker-calendar").hide();
-        $("#uyi-datepicker-div").position({
-            position: "absolute",
-            my: "center top",
-            at: "center bottom",
-            of: $(this)
-        });
+       $(".ui-datepicker-calendar").hide();
+       // Set position #ui-datepicker-div
+        let positionTopDateInput = $('#month').offset().top;
+        let newPositionTopDatePicker = (positionTopDateInput + 45) + 'px';
+        $('#ui-datepicker-div').css('top', newPositionTopDatePicker);
     });
 
     jQuery(function($){

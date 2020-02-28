@@ -9,9 +9,7 @@ $(document).ready(function () {
         dataType:   'json',
         async:      true,
         success: function(data, status) {
-            $('#loadingBox').hide();
-            product.show();
-            productCreate(data);
+            main(data);
         },
         error : function(xhr, textStatus, errorThrown) {
             $('#loadingBox').hide();
@@ -20,6 +18,20 @@ $(document).ready(function () {
             $('#errorBox').show();
         },
     });
+
+    function main(data) {
+        if (data['classes'].length === 0) {
+            let month = $('#product_forMonth').val();
+            $('#loadingBox').find('span')
+                .text('Всички ученици за месец ' + month + ' год. вече имат задължения!')
+                .css("color", "red")
+                .css("font-size", "18px");
+        } else  {
+            productCreate(data);
+            $('#loadingBox').hide();
+            product.show();
+        }
+    }
 
     function productCreate(data) {
         if (currentPathname === `${path}/create`) {

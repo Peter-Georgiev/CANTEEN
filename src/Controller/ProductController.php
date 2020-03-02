@@ -50,6 +50,27 @@ class ProductController extends AbstractController
     }
 
     /**
+     * @Route("/product/test", name="product_test")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
+     * @return JsonResponse|Response
+     * @throws \Exception
+     */
+    public function testAction(Request $request)
+    {
+        if (!$this->getUser()->isAdmin()) {
+            return $this->redirectToRoute('home');
+        }
+        $userID = 4;
+        $classTables = $this->getDoctrine()->getRepository(ClassTable::class)
+            //->findAllActiveStudents();
+            ->findForCreateProduct();
+        //->findForCreateProduct($userID);
+
+        dd($classTables);
+    }
+
+    /**
      * @Route("/product/ajax_cr_ed", name="product_ajax_cr_ed")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param Request $request

@@ -64,31 +64,35 @@ class ClassTableRepository extends ServiceEntityRepository
         $date = new \DateTime('now');
         $date->modify('+1 month');
 
-        $qbSub  = $this->getEntityManager()->createQueryBuilder();
-        return $qbSub
+        return $this->createQueryBuilder('c')
             ->select('s.id')
-            ->from('App:ClassTable', 'c')
             ->innerJoin('c.students', 's')
             ->innerJoin('s.users', 'u')
             ->leftJoin('s.products', 'p')
             ->where('s.isActive = true')
             ->andWhere("DATE_FORMAT(p.forMonth, '%m.%Y') LIKE :date")
             ->setParameter('date', '%' . $date->format('m.Y'))
-            //->setParameter('date', '%03.2020')
+            //->setParameter('date', '%04.2020')
             ->getQuery()
             ->getArrayResult();
+
     }
 
     public function findForCreateProduct($userID = 0)
     {
-       $qbSub2  = $this->getEntityManager()->createQueryBuilder();
-        $query  =  $qbSub2->select('c, s')
+        $sub = $this->findByDateCreateProduct();
+        if (count($sub) === 0) {
+            $sub[] =  ['id' => 0];
+        }
+
+        $qb  = $this->getEntityManager()->createQueryBuilder();
+        $query  =  $qb->select('c, s')
             ->from('App:ClassTable', 'c')
             ->innerJoin('c.students', 's')
             ->innerJoin('s.users', 'u')
-            ->where($qbSub2->expr()->notIn('s.id',':sub'))
+            ->where($qb->expr()->notIn('s.id',':sub'))
             ->andWhere('s.isActive = true')
-            ->setParameter('sub', $this->findByDateCreateProduct());
+            ->setParameter('sub', $sub);
 
         if ($userID > 0) {
             $query->andWhere('u.id =?1')

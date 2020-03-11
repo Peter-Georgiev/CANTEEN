@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -175,13 +176,26 @@ class RegistrationController extends AbstractController
         return $form;
     }
 
-    private function formWithoutPass($request, $user)
+    private function formUserFullNameIsDelete($user)
     {
         $form = $this->createFormBuilder($user)
             ->add('username', TextType::class, array(
                 'attr' => ['readonly' => true],
             ))
-            ->add('fullName', TextType::class)
+            ->add('fullName', TextType::class);
+
+        if($this->getUser()->isAdmin()) {
+            $form->add('isDelete', CheckboxType::class, [
+                'required' => false,
+            ]);
+        }
+
+        return $form;
+    }
+
+    private function formWithoutPass($request, $user)
+    {
+        $form = $this->formUserFullNameIsDelete($user)
             ->getForm();
 
         $form->handleRequest($request);
@@ -190,11 +204,7 @@ class RegistrationController extends AbstractController
 
     private function formWithPass($request, $user)
     {
-        $form = $this->createFormBuilder($user)
-            ->add('username', TextType::class, array(
-                'attr' => ['readonly' => true],
-            ))
-            ->add('fullName', TextType::class)
+        $form = $this->formUserFullNameIsDelete($user)
             ->add('password', RepeatedType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller

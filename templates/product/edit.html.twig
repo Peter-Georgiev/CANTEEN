@@ -12,15 +12,18 @@
                     <div class="form-group">
                         <div class="col-sm-2" id="class">
                             <label class="control-label" for="class_id">От клас</label>
-                            <select value="{{ form.vars['value'].student.class.id }}"
-                                    class="form-control" id="class_id" name="class[id]">
-                            </select>
+
+                            <input type="hidden" id="class_id" name="student[id]" value="{{ product.student.class.id }}">
+                            <input type="text" id="class_name" name="class[name]"
+                                   required="required" style="width:100%;" readonly="readonly"
+                                   class="form-control" value="{{ product.student.class.name }}">
                         </div>
                         <div class="col-sm-4" id="student">
                             <label class="control-label" for="student_id">Ученик</label>
-                            <select  value="{{ form.vars['value'].student.id }}" style="width:100%;"
-                                     class="form-control" id="student_id" name="student[id]">
-                            </select>
+
+                            <input type="hidden" id="student_id" name="student[id]" value="{{ product.student.id }}">
+                            <input type="text" id="student_name" name="student[name]" required="required" style="width:100%;"
+                                   readonly="readonly" class="form-control" value="{{ product.student.fullName }}">
                         </div>
                         <div class="col-sm-2">
                             {{ form_row(form.forMonth, {
@@ -41,7 +44,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-5 col-sm-offset-5">
-                            <a class="btn btn-default" href="{{ path('home') }}">Изход</a>
+                            <a class="btn btn-default" href="{{ path('product_ajax_cr_ed') }}">Изход</a>
                             <button type="submit" class="btn btn-primary">Запис</button>
                         </div>
                     </div>

@@ -168,6 +168,7 @@ class ProductController extends AbstractController
 
         try {
             $product = $this->getDoctrine()->getRepository(Product::class)->find($id);
+
             if (!$product) {
                 return $this->redirectToRoute('app_product_index');
             }
@@ -180,6 +181,7 @@ class ProductController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
                 $product->setLastEdit(new \DateTime('now'));
                 $student = $this->getDoctrine()->getRepository(Student::class)
                     ->find($request->get('student')['id']);
@@ -203,7 +205,7 @@ class ProductController extends AbstractController
             }
 
             return $this->render('product/edit.html.twig', ['form' => $form->createView(),
-                'classID' => $product->getStudent()->getClass()->getId()
+                'classID' => $product->getStudent()->getClass()->getId(), 'product' => $product
             ]);
         } catch (\Exception $e) {
             return $this->render('product/index.html.twig', ['danger' => $e->getMessage()]);

@@ -44,7 +44,11 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $role = strtoupper(trim($request->get('role')['name']));
-            if (array_key_exists($role, $this->roles())) {
+            if (array_key_exists($role, $this->roles()) &&
+                !array_key_exists($role, $user->getRoles())) {
+                //$arrRoleTemp = ($user->getRoles());
+                //array_push($arrRoleTemp, $role);
+                //$user->setRoles($arrRoleTemp);
                 $user->setRoles([$role]);
             }
 
@@ -145,7 +149,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+        $users = $this->getDoctrine()->getRepository(User::class)
+            ->findAll();
         if (!$users) {
             return $this->redirectToRoute('home');
         }

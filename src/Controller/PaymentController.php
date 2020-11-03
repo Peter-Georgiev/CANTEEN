@@ -420,7 +420,8 @@ class PaymentController extends AbstractController
         }
 
         if (count($token) !== 2) {
-            $classTable = $this->getDoctrine()->getRepository(ClassTable::class)->findAll();
+            $classTable = $this->getDoctrine()->getRepository(ClassTable::class)
+                ->findBy(array(), array('name' => 'ASC'));
             return $this->render('payment/by-month-class.html.twig', [
                 'dateTime' => $dateTime, 'classes' => $classTable
             ]);

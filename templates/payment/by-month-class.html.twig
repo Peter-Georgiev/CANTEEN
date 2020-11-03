@@ -35,7 +35,8 @@
                     <div class="form-group">
                         <div class="col-sm-2" id="class">
                             <label class="control-label" for="month">Месец</label>
-                            <input type="text" id="month" name="month" class="monthPicker form-control" readonly />
+                            <input type="text" id="month" name="month" class="monthPicker form-control"
+                                   value={{ "now"|date_modify("-1 month")|date("m.Y") }} readonly />
                         </div>
                     </div>
 

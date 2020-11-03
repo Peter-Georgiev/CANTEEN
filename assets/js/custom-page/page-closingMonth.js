@@ -10,6 +10,7 @@ $(document).ready(function () {
 
     function main(data) {
         if (data.length === 0) {
+            closingMonth.find('#month_id').hide();
             closingMonth.find('.control-label').html('Няма за преключване!');
         } else  {
             selectedClassStudent(data);

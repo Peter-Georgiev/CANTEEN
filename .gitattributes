@@ -1,1 +1,2 @@
-repo:Peter-Georgiev/CANTEEN language:php
+*.js linguist-detectable=false
+*.php linguist-detectable=true

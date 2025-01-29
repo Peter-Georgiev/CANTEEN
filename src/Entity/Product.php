@@ -71,7 +71,7 @@ class Product
         $this->lastEdit = $datetime;
         //month +1
         $dateMonthNex = new \DateTime('now');;
-        $this->forMonth = $dateMonthNex->modify('+1 month');
+        $this->forMonth = $dateMonthNex->modify('first day of +1 month');
         $this->isPaid = false;
         $this->isMonthEnded = false;
         $this->students = new ArrayCollection();
